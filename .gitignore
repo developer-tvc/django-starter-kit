@@ -1,0 +1,81 @@
+# ========================
+# Python
+# ========================
+__pycache__/
+*.py[codz]
+*$py.class
+*.so
+
+# ========================
+# Distribution / Packaging
+# ========================
+build/
+dist/
+*.egg-info/
+*.egg
+
+# ========================
+# Virtual Environments
+# ========================
+.venv/
+venv/
+env/
+
+# ========================
+# Environment Variables
+# ========================
+.env
+.env.*
+!.env.example
+
+# ========================
+# Testing & Coverage
+# ========================
+.pytest_cache/
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+nosetests.xml
+
+# ========================
+# Type Checking
+# ========================
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# ========================
+# Linting & Formatting
+# ========================
+.ruff_cache/
+
+# ========================
+# IDE / Editor
+# ========================
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# ========================
+# OS Files
+# ========================
+.DS_Store
+Thumbs.db
+
+# ========================
+# Logs
+# ========================
+*.log
+
+# ========================
+# Docker
+# ========================
+.dockerignore
+
+# ========================
+# Misc
+# ========================
+.cache/
