@@ -1,11 +1,5 @@
 from rest_framework.permissions import BasePermission, IsAuthenticated
 
-from users import configurations, models
-
-
-def is_authenticated(self, request, view):
-    return IsAuthenticated.has_permission(self, request, view)
-
 
 class IsNonAdminUser(BasePermission):
     """
@@ -19,8 +13,10 @@ class IsNonAdminUser(BasePermission):
         return bool(request.user and not request.user.is_staff)
 
 
-def is_user_permitted(request, role_name):
-    pass
+class IsSuperUser(BasePermission):
+    """
+    Allow access only to superusers.
+    """
 
-    return True
-
+    def has_permission(self, request, view):
+        return bool(request.user and request.user.is_authenticated and request.user.is_superuser)
