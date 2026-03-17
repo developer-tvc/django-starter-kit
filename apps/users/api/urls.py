@@ -12,4 +12,6 @@ urlpatterns = [
     path("permissions/<int:permission_id>/", role_views.PermissionUpdateDestroyView.as_view()),
     path("permissions/assign/", role_views.RolePermissionAssignView.as_view()),
     path("roles/assign/", role_views.UserRoleAssignView.as_view()),
+    path("permissions/unassign/", role_views.PermissionUnassignView.as_view()),
+    path("roles/unassign/", role_views.RoleUnassignView.as_view()),
 ]   

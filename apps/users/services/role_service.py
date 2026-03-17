@@ -116,16 +116,13 @@ class RoleService:
         Assign roles to a user
         """
 
-        try:
-            user = User.objects.get(id=user_id)
-        except User.DoesNotExist:
-            raise ObjectDoesNotExist("User not found")
+       
+        user_roles = UserRole.objects.filter(user=user_id,role__in=role_ids)
+        if user_roles.exists():
+            raise ValueError("User Role already exists")
 
-        roles = Role.objects.filter(id__in=role_ids)
-        if not roles.exists():
-            raise ValueError("Roles not found")
         
-        for role in roles:
+        for user_role in user_roles:
             UserRole.objects.create(user=user, role=role)
 
         return user
@@ -146,5 +143,45 @@ class RoleService:
         permissions = UserPermission.objects.filter(id__in=permission_ids)
 
         user.permissions.set(permissions)
+
+        return user
+
+
+    @staticmethod # Static service method to avoid unnecessary class instantiation
+    @transaction.atomic
+    def unassign_permissions(role_id: int, permission_ids: list[int]) -> Role:
+        """
+        Unassign permissions from a role
+        """
+
+        try:
+            role = Role.objects.get(id=role_id)
+        except Role.DoesNotExist:
+            raise ObjectDoesNotExist("Role not found")
+
+        permissions = UserPermission.objects.filter(id__in=permission_ids)
+
+        role.permissions.remove(*permissions)
+
+        return role
+
+    @staticmethod # Static service method to avoid unnecessary class instantiation
+    @transaction.atomic
+    def unassign_roles_from_user(user_id: int, role_ids: list[int]) -> User:
+        """
+        Unassign roles from a user
+        """
+
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            raise ObjectDoesNotExist("User not found")
+
+        roles = Role.objects.filter(id__in=role_ids)
+        if not roles.exists():
+            raise ValueError("Roles not found")
+        
+        for role in roles:
+            UserRole.objects.filter(user=user, role=role).delete()
 
         return user

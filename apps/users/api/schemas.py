@@ -118,3 +118,28 @@ user_role_assign_schema = extend_schema(
         400: dict,
     },
 )
+
+
+permission_unassign_schema = extend_schema(
+    tags=["Roles"],
+    summary="Unassign Permissions from Role",
+    description="Unassign permissions from a role.",
+    request=role_serializer.RolePermissionAssignSerializer,
+    responses={
+        201: role_serializer.RoleSerializer,
+        400: dict,
+    },
+)
+
+
+role_unassign_schema = extend_schema(
+    tags=["Roles"],
+    summary="Unassign Roles from User",
+    description="Unassign roles from a user.",
+    request=role_serializer.UserRoleAssignSerializer,
+    responses={
+        201: dict,
+        400: dict,
+    },
+)
+
