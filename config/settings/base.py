@@ -50,6 +50,7 @@ THIRD_PARTY_APPS = [
 
 LOCAL_APPS = [
     "apps.users",
+    "apps.notifications",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -192,9 +193,25 @@ CORS_EXPOSE_HEADERS = [
 
 # Django-REST-Framework simplejwt configurations
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=2),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
     'ROTATE_REFRESH_TOKENS': True, # If True, a new refresh token is issued when the refresh token is used
     'BLACKLIST_AFTER_ROTATION': True, # If True, the old refresh token is blacklisted when the refresh token is used
+    'AUTH_HEADER_TYPES': ('Bearer',),
     'AUTH_TOKEN_CLASSES': ('users.views.JWTAccessToken',),
 }
+
+
+# Email configurations
+EMAIL_BACKEND = os.getenv("EMAIL_BACKEND")
+EMAIL_HOST = os.getenv("EMAIL_HOST")
+EMAIL_PORT = int(os.getenv("EMAIL_PORT", 587))
+EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS") == "True"
+
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
+
+
+CELERY_BROKER_URL = "redis://localhost:6379/0"
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"

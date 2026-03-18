@@ -1,5 +1,5 @@
 from drf_spectacular.utils import extend_schema
-from apps.users.serializers.auth_serializer import LoginSerializer
+from apps.users.serializers.auth_serializer import LoginSerializer,PasswordResetRequestSerializer, PasswordResetConfirmSerializer
 from apps.users.serializers import role_serializer
 
 login_schema = extend_schema(
@@ -143,3 +143,25 @@ role_unassign_schema = extend_schema(
     },
 )
 
+
+password_reset_request_schema = extend_schema(
+    tags=["Auth"],
+    summary="Request Password Reset",
+    request=PasswordResetRequestSerializer,
+    responses={200: dict},
+)
+
+password_reset_confirm_schema = extend_schema(
+    tags=["Auth"],
+    summary="Confirm Password Reset",
+    request=PasswordResetConfirmSerializer,
+    responses={200: dict, 400: dict},
+)
+
+logout_schema = extend_schema(
+    tags=["Auth"],
+    summary="Logout",
+    description="Logout user by blacklisting the refresh token.",
+    request=dict,
+    responses={200: dict, 400: dict, 401: dict},
+)

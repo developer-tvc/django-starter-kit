@@ -1,7 +1,12 @@
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.exceptions import AuthenticationFailed
+from django.contrib.auth import get_user_model
+from django.utils import timezone
+from apps.generics.utils.token_utils import create_password_reset_token, decode_password_reset_token
+from apps.notifications.services.email_service import EmailService
 
+User = get_user_model()
 
 class AuthService:
 
@@ -23,3 +28,35 @@ class AuthService:
             "access": str(refresh.access_token),
             "refresh": str(refresh),
         }
+
+    @staticmethod
+    def request_password_reset(email: str):
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            print("user not found")
+            return  # don't expose user existence
+
+        token = create_password_reset_token(user.id)
+        reset_link = f"http://localhost:3000/reset-password?token={token}"
+        EmailService.send_email(
+            subject="Password Reset",
+            to=[user.email],
+            template_name="emails/password_reset.html",
+            context={
+                "user": user.first_name + " " + user.last_name,
+                "reset_link": reset_link,
+                "expiry_minutes": 15,
+            },
+        )
+
+    @staticmethod
+    def reset_password(token: str, new_password: str):
+        try:
+            user_id = decode_password_reset_token(token)
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            raise ValueError("Invalid token")
+
+        user.set_password(new_password)
+        user.save()
