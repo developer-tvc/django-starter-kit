@@ -1,14 +1,14 @@
-from rest_framework.views import APIView
-from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
-from apps.users.services.role_service import RoleService
-from apps.users.selectors.role_selectors import list_roles, list_permissions
-from apps.users.serializers import role_serializer
-from apps.users.api import schemas
-from apps.generics.permissions import IsAuthenticated, HasPermission
+from apps.generics.permissions import HasPermission, IsAuthenticated
 from apps.generics.responses import api_response
 from apps.users import constants
+from apps.users.api import schemas
+from apps.users.selectors.role_selectors import list_permissions, list_roles
+from apps.users.serializers import role_serializer
+from apps.users.services.role_service import RoleService
 
 
 class RoleListCreateView(APIView):

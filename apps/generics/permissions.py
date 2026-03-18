@@ -1,5 +1,7 @@
 from traceback import print_tb
+
 from rest_framework.permissions import BasePermission, IsAuthenticated
+
 from apps.users.models import UserRole
 
 

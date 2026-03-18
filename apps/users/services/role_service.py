@@ -1,7 +1,8 @@
-from apps.users.models import Role, UserPermission, UserRole
 from django.contrib.auth import get_user_model
-from django.db import transaction
 from django.core.exceptions import ObjectDoesNotExist
+from django.db import transaction
+
+from apps.users.models import Role, UserPermission, UserRole
 
 User = get_user_model()
 

@@ -1,8 +1,8 @@
-from django.contrib.auth import authenticate
-from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework.exceptions import AuthenticationFailed
-from django.contrib.auth import get_user_model
+from django.contrib.auth import authenticate, get_user_model
 from django.utils import timezone
+from rest_framework.exceptions import AuthenticationFailed
+from rest_framework_simplejwt.tokens import RefreshToken
+
 from apps.generics.utils.token_utils import (
     create_password_reset_token,
     decode_password_reset_token,

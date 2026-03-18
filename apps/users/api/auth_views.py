@@ -1,23 +1,24 @@
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
 from drf_spectacular.utils import extend_schema
-from apps.users.serializers.auth_serializer import LoginSerializer
-from apps.users.services.auth_service import AuthService
-from rest_framework_simplejwt.views import TokenRefreshView, TokenBlacklistView
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework_simplejwt.exceptions import TokenError
+from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.views import TokenBlacklistView, TokenRefreshView
+
 from apps.users.api.schemas import (
     login_schema,
-    password_reset_request_schema,
-    password_reset_confirm_schema,
     logout_schema,
+    password_reset_confirm_schema,
+    password_reset_request_schema,
 )
 from apps.users.serializers.auth_serializer import (
-    PasswordResetRequestSerializer,
+    LoginSerializer,
     PasswordResetConfirmSerializer,
+    PasswordResetRequestSerializer,
 )
-from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken
-from rest_framework_simplejwt.exceptions import TokenError
+from apps.users.services.auth_service import AuthService
 
 
 class LoginView(APIView):

@@ -1,5 +1,6 @@
-from apps.notifications.tasks.email_tasks import send_email_task
 from django.template.loader import render_to_string
+
+from apps.notifications.tasks.email_tasks import send_email_task
 
 
 class EmailService:
