@@ -13,3 +13,6 @@ class PasswordResetRequestSerializer(serializers.Serializer):
 class PasswordResetConfirmSerializer(serializers.Serializer):
     token = serializers.CharField()
     new_password = serializers.CharField(min_length=6)
+
+class EmailVerificationSerializer(serializers.Serializer):
+    token = serializers.CharField()

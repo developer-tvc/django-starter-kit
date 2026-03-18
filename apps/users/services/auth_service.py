@@ -16,13 +16,14 @@ class AuthService:
     def login(username: str, password: str):
 
         user = authenticate(username=username, password=password)
-
+        
         if user is None:
             raise AuthenticationFailed("Invalid username or password")
 
         if not user.is_active:
             raise AuthenticationFailed("Account is disabled")
-
+        if not user.is_email_verified:
+            raise AuthenticationFailed("Account is not verified")
         refresh = RefreshToken.for_user(user)
 
         return {
@@ -36,7 +37,6 @@ class AuthService:
         try:
             user = User.objects.get(email=email)
         except User.DoesNotExist:
-            print("user not found")
             return  # don't expose user existence
 
         token = create_password_reset_token(user.id)
@@ -61,4 +61,14 @@ class AuthService:
             raise ValueError("Invalid token")
 
         user.set_password(new_password)
+        user.save()
+
+    @staticmethod
+    def verify_email(token: str):
+        try:
+            user_id = decode_password_reset_token(token)
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            raise ValueError("Invalid token")
+        user.is_email_verified = True
         user.save()

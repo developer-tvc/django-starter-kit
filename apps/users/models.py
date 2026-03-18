@@ -4,9 +4,9 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from apps.generics.mixins import GenericModelMixin
+from apps.activity.mixin import ActivityMixin
 
-
-class User(AbstractUser):
+class User(AbstractUser,ActivityMixin):
     # Changing default username field type `CharField` to `EmailField`
     username = models.EmailField(
         _("email address"),
@@ -37,7 +37,7 @@ class User(AbstractUser):
         verbose_name_plural = "Users"
 
 
-class UserPermission(GenericModelMixin):
+class UserPermission(GenericModelMixin,ActivityMixin):
     """
     Custom permission table for fine-grained access control.
     """
@@ -48,7 +48,7 @@ class UserPermission(GenericModelMixin):
         return self.name
 
 
-class Role(GenericModelMixin):
+class Role(GenericModelMixin,ActivityMixin):
     """
     Custom role table.
     """

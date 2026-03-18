@@ -4,7 +4,7 @@ from apps.users.serializers import (profile_serializer, role_serializer,
                                     user_serializer)
 from apps.users.serializers.auth_serializer import (
     LoginSerializer, PasswordResetConfirmSerializer,
-    PasswordResetRequestSerializer)
+    PasswordResetRequestSerializer, EmailVerificationSerializer)
 
 login_schema = extend_schema(
     tags=["Auth"],
@@ -242,4 +242,13 @@ profile_update_schema = extend_schema(
         200: profile_serializer.ProfileViewSerializer,
         401: dict,
     },
+)
+
+
+email_verification_schema = extend_schema(
+    tags=["Auth"],
+    summary="Email Verification",
+    description="Verify user email.",
+    request=EmailVerificationSerializer,
+    responses={200: dict, 400: dict},
 )

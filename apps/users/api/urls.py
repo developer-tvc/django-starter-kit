@@ -60,4 +60,5 @@ urlpatterns = [
         name="user-detail",
     ),
     path("profile/", profile_views.ProfileView.as_view(), name="profile"),
+    path("verify-email/", auth_views.EmailVerificationView.as_view(), name="verify-email"),
 ]

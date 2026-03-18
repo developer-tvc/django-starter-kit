@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Account Verification</title>
+</head>
+
+<body>
+    <h2>Account Verification</h2>
+
+    <p>Hello {{ user }},</p>
+
+    <p>You requested to verify your account.</p>
+
+    <p>
+        Click the link below to verify your account:
+    </p>
+
+    <a href="{{ verification_link }}">Verify Account</a>
+
+    <p>This link will expire in {{ expiry_minutes }} minutes.</p>
+
+    <p>If you didn't request this, ignore this email.</p>
+</body>
+
+</html>

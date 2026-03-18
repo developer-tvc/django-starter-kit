@@ -12,6 +12,5 @@ class EmailService:
         """
 
         body = render_to_string(template_name, context)
-        print("ready to go.........")
         for email in to:
             send_email_task.delay(email, subject, body)
