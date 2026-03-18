@@ -3,10 +3,14 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.exceptions import AuthenticationFailed
 from django.contrib.auth import get_user_model
 from django.utils import timezone
-from apps.generics.utils.token_utils import create_password_reset_token, decode_password_reset_token
+from apps.generics.utils.token_utils import (
+    create_password_reset_token,
+    decode_password_reset_token,
+)
 from apps.notifications.services.email_service import EmailService
 
 User = get_user_model()
+
 
 class AuthService:
 

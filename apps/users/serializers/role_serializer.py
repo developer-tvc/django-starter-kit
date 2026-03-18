@@ -8,11 +8,13 @@ class PermissionSerializer(serializers.ModelSerializer):
         model = UserPermission
         fields = ["id", "name"]
 
+
 class RoleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Role
         fields = ["id", "name"]
+
 
 class RoleListSerializer(serializers.ModelSerializer):
 
@@ -26,6 +28,7 @@ class RoleListSerializer(serializers.ModelSerializer):
 class RolePermissionAssignSerializer(serializers.Serializer):
     role_id = serializers.IntegerField()
     permission_ids = serializers.ListField(child=serializers.IntegerField())
+
 
 class UserRoleAssignSerializer(serializers.Serializer):
     user_id = serializers.IntegerField()

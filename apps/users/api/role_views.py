@@ -6,12 +6,13 @@ from apps.users.services.role_service import RoleService
 from apps.users.selectors.role_selectors import list_roles, list_permissions
 from apps.users.serializers import role_serializer
 from apps.users.api import schemas
-from apps.generics.permissions import IsAuthenticated,HasPermission
+from apps.generics.permissions import IsAuthenticated, HasPermission
 from apps.generics.responses import api_response
 from apps.users import constants
 
+
 class RoleListCreateView(APIView):
-    permission_classes = [IsAuthenticated,HasPermission]
+    permission_classes = [IsAuthenticated, HasPermission]
 
     # Define permissions for each method
     method_permissions = {
@@ -24,27 +25,34 @@ class RoleListCreateView(APIView):
         self.required_permission = self.method_permissions.get(self.request.method)
         return super().get_permissions()
 
-
-    
     @schemas.role_list_schema
     def get(self, request):
         roles = list_roles()
         serializer = role_serializer.RoleListSerializer(roles, many=True)
-        return api_response(message="Roles retrieved successfully.", data=serializer.data)
+        return api_response(
+            message="Roles retrieved successfully.", data=serializer.data
+        )
 
     @schemas.role_create_schema
     def post(self, request):
-        serializer = role_serializer.RoleSerializer(data=request.data)  # Validate the data
+        serializer = role_serializer.RoleSerializer(
+            data=request.data
+        )  # Validate the data
         serializer.is_valid(raise_exception=True)
         try:
             role = RoleService.create_role(serializer.validated_data["name"])
             serializer = role_serializer.RoleSerializer(role)
-            return api_response(message="Role created successfully.", data=serializer.data, status_code=status.HTTP_201_CREATED)
+            return api_response(
+                message="Role created successfully.",
+                data=serializer.data,
+                status_code=status.HTTP_201_CREATED,
+            )
         except ValueError as e:
             return api_response(message=str(e), status_code=status.HTTP_409_CONFLICT)
 
+
 class RoleUpdateDestroyView(APIView):
-    permission_classes = [IsAuthenticated,HasPermission]
+    permission_classes = [IsAuthenticated, HasPermission]
     # Define permissions for each method
     method_permissions = {
         "GET": constants.ROLE_UPDATE,
@@ -58,12 +66,16 @@ class RoleUpdateDestroyView(APIView):
 
     @schemas.role_update_schema
     def put(self, request, role_id):
-        serializer = role_serializer.RoleSerializer(data=request.data)  # Validate the data
+        serializer = role_serializer.RoleSerializer(
+            data=request.data
+        )  # Validate the data
         serializer.is_valid(raise_exception=True)
         try:
             role = RoleService.update_role(role_id, serializer.validated_data["name"])
             serializer = role_serializer.RoleSerializer(role)
-            return api_response(message="Role updated successfully.", data=serializer.data)
+            return api_response(
+                message="Role updated successfully.", data=serializer.data
+            )
         except ValueError as e:
             return api_response(message=str(e), status_code=status.HTTP_409_CONFLICT)
 
@@ -88,25 +100,37 @@ class PermissionListCreateView(APIView):
         # Dynamically set the required_permission attribute based on HTTP method
         self.required_permission = self.method_permissions.get(self.request.method)
         return super().get_permissions()
+
     @schemas.permission_list_schema
     def get(self, request):
         permissions = list_permissions()
         serializer = role_serializer.PermissionSerializer(permissions, many=True)
-        return api_response(message="Permissions retrieved successfully.", data=serializer.data)
+        return api_response(
+            message="Permissions retrieved successfully.", data=serializer.data
+        )
 
     @schemas.permission_create_schema
     def post(self, request):
-        serializer = role_serializer.PermissionSerializer(data=request.data)  # Validate the data
+        serializer = role_serializer.PermissionSerializer(
+            data=request.data
+        )  # Validate the data
         serializer.is_valid(raise_exception=True)
         try:
-            permission = RoleService.create_permission(serializer.validated_data["name"])
+            permission = RoleService.create_permission(
+                serializer.validated_data["name"]
+            )
             serializer = role_serializer.PermissionSerializer(permission)
-            return api_response(message="Permission created successfully.", data=serializer.data, status_code=status.HTTP_201_CREATED)
+            return api_response(
+                message="Permission created successfully.",
+                data=serializer.data,
+                status_code=status.HTTP_201_CREATED,
+            )
         except ValueError as e:
             return api_response(message=str(e), status_code=status.HTTP_409_CONFLICT)
 
+
 class PermissionUpdateDestroyView(APIView):
-    permission_classes = [IsAuthenticated,HasPermission]
+    permission_classes = [IsAuthenticated, HasPermission]
     # Define permissions for each method
     method_permissions = {
         "GET": constants.PERMISSION_UPDATE,
@@ -117,14 +141,21 @@ class PermissionUpdateDestroyView(APIView):
         # Dynamically set the required_permission attribute based on HTTP method
         self.required_permission = self.method_permissions.get(self.request.method)
         return super().get_permissions()
+
     @schemas.permission_update_schema
     def put(self, request, permission_id):
-        serializer = role_serializer.PermissionSerializer(data=request.data)  # Validate the data
+        serializer = role_serializer.PermissionSerializer(
+            data=request.data
+        )  # Validate the data
         serializer.is_valid(raise_exception=True)
         try:
-            permission = RoleService.update_permission(permission_id, serializer.validated_data["name"])
+            permission = RoleService.update_permission(
+                permission_id, serializer.validated_data["name"]
+            )
             serializer = role_serializer.PermissionSerializer(permission)
-            return api_response(message="Permission updated successfully.", data=serializer.data)
+            return api_response(
+                message="Permission updated successfully.", data=serializer.data
+            )
         except ValueError as e:
             return api_response(message=str(e), status_code=status.HTTP_409_CONFLICT)
 
@@ -135,63 +166,99 @@ class PermissionUpdateDestroyView(APIView):
             return api_response(message="Permission deleted successfully.")
         except ValueError as e:
             return api_response(message=str(e), status_code=status.HTTP_409_CONFLICT)
-        
 
 
 class RolePermissionAssignView(APIView):
-    permission_classes = [IsAuthenticated,HasPermission]
+    permission_classes = [IsAuthenticated, HasPermission]
     required_permission = constants.ASSIGN_PERMISSION
 
     @schemas.role_permission_assign_schema
     def post(self, request):
-        serializer = role_serializer.RolePermissionAssignSerializer(data=request.data)  # Validate the data
+        serializer = role_serializer.RolePermissionAssignSerializer(
+            data=request.data
+        )  # Validate the data
         serializer.is_valid(raise_exception=True)
         try:
-            role = RoleService.assign_permissions(serializer.validated_data["role_id"], serializer.validated_data["permission_ids"])
+            role = RoleService.assign_permissions(
+                serializer.validated_data["role_id"],
+                serializer.validated_data["permission_ids"],
+            )
             serializer = role_serializer.RoleSerializer(role)
-            return api_response(message="Permissions assigned to role successfully.", data=serializer.data, status_code=status.HTTP_201_CREATED)
+            return api_response(
+                message="Permissions assigned to role successfully.",
+                data=serializer.data,
+                status_code=status.HTTP_201_CREATED,
+            )
         except ValueError as e:
             return api_response(message=str(e), status_code=status.HTTP_409_CONFLICT)
 
 
 class UserRoleAssignView(APIView):
-    permission_classes = [IsAuthenticated,HasPermission]
+    permission_classes = [IsAuthenticated, HasPermission]
     required_permission = constants.ASSIGN_ROLE
+
     @schemas.user_role_assign_schema
     def post(self, request):
-        serializer = role_serializer.UserRoleAssignSerializer(data=request.data)  # Validate the data
+        serializer = role_serializer.UserRoleAssignSerializer(
+            data=request.data
+        )  # Validate the data
         serializer.is_valid(raise_exception=True)
         try:
-            user = RoleService.assign_roles_to_user(serializer.validated_data["user_id"], serializer.validated_data["role_ids"])
-            return api_response(message="Roles assigned to user successfully.", status_code=status.HTTP_201_CREATED)
+            user = RoleService.assign_roles_to_user(
+                serializer.validated_data["user_id"],
+                serializer.validated_data["role_ids"],
+            )
+            return api_response(
+                message="Roles assigned to user successfully.",
+                status_code=status.HTTP_201_CREATED,
+            )
         except ValueError as e:
             return api_response(message=str(e), status_code=status.HTTP_409_CONFLICT)
 
 
 class PermissionUnassignView(APIView):
-    permission_classes = [IsAuthenticated,HasPermission]
+    permission_classes = [IsAuthenticated, HasPermission]
     required_permission = constants.UNASSIGN_PERMISSION
+
     @schemas.permission_unassign_schema
     def post(self, request):
-        serializer = role_serializer.RolePermissionAssignSerializer(data=request.data)  # Validate the data
+        serializer = role_serializer.RolePermissionAssignSerializer(
+            data=request.data
+        )  # Validate the data
         serializer.is_valid(raise_exception=True)
         try:
-            role = RoleService.unassign_permissions(serializer.validated_data["role_id"], serializer.validated_data["permission_ids"])
+            role = RoleService.unassign_permissions(
+                serializer.validated_data["role_id"],
+                serializer.validated_data["permission_ids"],
+            )
             serializer = role_serializer.RoleSerializer(role)
-            return api_response(message="Permissions unassigned from role successfully.", data=serializer.data, status_code=status.HTTP_201_CREATED)
+            return api_response(
+                message="Permissions unassigned from role successfully.",
+                data=serializer.data,
+                status_code=status.HTTP_201_CREATED,
+            )
         except ValueError as e:
             return api_response(message=str(e), status_code=status.HTTP_409_CONFLICT)
 
 
 class RoleUnassignView(APIView):
-    permission_classes = [IsAuthenticated,HasPermission]
+    permission_classes = [IsAuthenticated, HasPermission]
     required_permission = constants.UNASSIGN_ROLE
+
     @schemas.role_unassign_schema
     def post(self, request):
-        serializer = role_serializer.UserRoleAssignSerializer(data=request.data)  # Validate the data
+        serializer = role_serializer.UserRoleAssignSerializer(
+            data=request.data
+        )  # Validate the data
         serializer.is_valid(raise_exception=True)
         try:
-            user = RoleService.unassign_roles_from_user(serializer.validated_data["user_id"], serializer.validated_data["role_ids"])
-            return api_response(message="Roles unassigned from user successfully.", status_code=status.HTTP_201_CREATED)
+            user = RoleService.unassign_roles_from_user(
+                serializer.validated_data["user_id"],
+                serializer.validated_data["role_ids"],
+            )
+            return api_response(
+                message="Roles unassigned from user successfully.",
+                status_code=status.HTTP_201_CREATED,
+            )
         except ValueError as e:
             return api_response(message=str(e), status_code=status.HTTP_409_CONFLICT)

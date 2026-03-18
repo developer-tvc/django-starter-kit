@@ -1,4 +1,4 @@
-from apps.users.models import Role, UserPermission,UserRole
+from apps.users.models import Role, UserPermission, UserRole
 from django.contrib.auth import get_user_model
 from django.db import transaction
 from django.core.exceptions import ObjectDoesNotExist
@@ -8,7 +8,7 @@ User = get_user_model()
 
 class RoleService:
 
-    @staticmethod # Static service method to avoid unnecessary class instantiation
+    @staticmethod  # Static service method to avoid unnecessary class instantiation
     @transaction.atomic
     def create_permission(permission_name: str) -> UserPermission:
         """
@@ -20,7 +20,7 @@ class RoleService:
         permission = UserPermission.objects.create(name=permission_name)
         return permission
 
-    @staticmethod # Static service method to avoid unnecessary class instantiation
+    @staticmethod  # Static service method to avoid unnecessary class instantiation
     @transaction.atomic
     def update_permission(permission_id: int, permission_name: str) -> UserPermission:
         """
@@ -36,7 +36,7 @@ class RoleService:
 
         return permission
 
-    @staticmethod # Static service method to avoid unnecessary class instantiation
+    @staticmethod  # Static service method to avoid unnecessary class instantiation
     @transaction.atomic
     def delete_permission(permission_id: int) -> None:
         """
@@ -49,7 +49,7 @@ class RoleService:
 
         permission.delete()
 
-    @staticmethod # Static service method to avoid unnecessary class instantiation
+    @staticmethod  # Static service method to avoid unnecessary class instantiation
     @transaction.atomic
     def create_role(role_name: str) -> Role:
         """
@@ -61,8 +61,7 @@ class RoleService:
         role = Role.objects.create(name=role_name)
         return role
 
-
-    @staticmethod # Static service method to avoid unnecessary class instantiation
+    @staticmethod  # Static service method to avoid unnecessary class instantiation
     @transaction.atomic
     def update_role(role_id: int, role_name: str) -> Role:
         """
@@ -78,7 +77,7 @@ class RoleService:
 
         return role
 
-    @staticmethod # Static service method to avoid unnecessary class instantiation
+    @staticmethod  # Static service method to avoid unnecessary class instantiation
     @transaction.atomic
     def delete_role(role_id: int) -> None:
         """
@@ -91,7 +90,7 @@ class RoleService:
 
         role.delete()
 
-    @staticmethod # Static service method to avoid unnecessary class instantiation
+    @staticmethod  # Static service method to avoid unnecessary class instantiation
     @transaction.atomic
     def assign_permissions(role_id: int, permission_ids: list[int]) -> Role:
         """
@@ -109,26 +108,23 @@ class RoleService:
 
         return role
 
-    @staticmethod # Static service method to avoid unnecessary class instantiation
+    @staticmethod  # Static service method to avoid unnecessary class instantiation
     @transaction.atomic
     def assign_roles_to_user(user_id: int, role_ids: list[int]) -> User:
         """
         Assign roles to a user
         """
 
-       
-        user_roles = UserRole.objects.filter(user=user_id,role__in=role_ids)
+        user_roles = UserRole.objects.filter(user=user_id, role__in=role_ids)
         if user_roles.exists():
             raise ValueError("User Role already exists")
 
-        
         for user_role in user_roles:
             UserRole.objects.create(user=user, role=role)
 
         return user
 
-
-    @staticmethod # Static service method to avoid unnecessary class instantiation
+    @staticmethod  # Static service method to avoid unnecessary class instantiation
     @transaction.atomic
     def assign_permissions_to_user(user_id: int, permission_ids: list[int]) -> User:
         """
@@ -146,8 +142,7 @@ class RoleService:
 
         return user
 
-
-    @staticmethod # Static service method to avoid unnecessary class instantiation
+    @staticmethod  # Static service method to avoid unnecessary class instantiation
     @transaction.atomic
     def unassign_permissions(role_id: int, permission_ids: list[int]) -> Role:
         """
@@ -165,7 +160,7 @@ class RoleService:
 
         return role
 
-    @staticmethod # Static service method to avoid unnecessary class instantiation
+    @staticmethod  # Static service method to avoid unnecessary class instantiation
     @transaction.atomic
     def unassign_roles_from_user(user_id: int, role_ids: list[int]) -> User:
         """
@@ -180,7 +175,7 @@ class RoleService:
         roles = Role.objects.filter(id__in=role_ids)
         if not roles.exists():
             raise ValueError("Roles not found")
-        
+
         for role in roles:
             UserRole.objects.filter(user=user, role=role).delete()
 
