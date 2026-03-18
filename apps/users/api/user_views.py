@@ -2,13 +2,15 @@ from rest_framework.views import APIView
 from rest_framework import status
 from apps.users.services.user_service import UserService
 from apps.users.serializers import user_serializer
-from apps.generics.permissions import HasPermission,IsAuthenticated
+from apps.generics.permissions import HasPermission, IsAuthenticated
 from apps.users.api import schemas
 from apps.users import constants
 from apps.generics.responses import api_response
 from apps.users.selectors.user_selectors import get_user
+
+
 class UserListCreateView(APIView):
-    permission_classes = [HasPermission,IsAuthenticated]
+    permission_classes = [HasPermission, IsAuthenticated]
     # Define permissions for each method
     method_permissions = {
         "GET": constants.USER_VIEW,
@@ -39,12 +41,14 @@ class UserListCreateView(APIView):
             last_name=request.data.get("last_name"),
         )
         return api_response(
-            message="User created successfully.", data=user_serializer.UserListSerializer(user).data, status_code=status.HTTP_201_CREATED
+            message="User created successfully.",
+            data=user_serializer.UserListSerializer(user).data,
+            status_code=status.HTTP_201_CREATED,
         )
 
 
 class UserRetrieveUpdateDeleteView(APIView):
-    permission_classes = [HasPermission,IsAuthenticated]
+    permission_classes = [HasPermission, IsAuthenticated]
     # Define permissions for each method
     method_permissions = {
         "GET": constants.USER_VIEW,
@@ -79,9 +83,7 @@ class UserRetrieveUpdateDeleteView(APIView):
                 message="User not found", status_code=status.HTTP_404_NOT_FOUND
             )
         serializer = user_serializer.UserListSerializer(user)
-        return api_response(
-            message="User updated successfully.", data=serializer.data
-        )
+        return api_response(message="User updated successfully.", data=serializer.data)
 
     @schemas.user_delete_schema
     def delete(self, request, user_id):

@@ -1,5 +1,7 @@
-from apps.users.models import User,Role
-from apps.users.selectors.user_selectors import get_user,list_users
+from apps.users.models import User, Role
+from apps.users.selectors.user_selectors import get_user, list_users
+
+
 class UserService:
 
     @staticmethod
@@ -8,7 +10,12 @@ class UserService:
 
     @staticmethod
     def create_user(username: str, password: str, first_name: str, last_name: str):
-        user = User(username=username, email=username, first_name=first_name, last_name=last_name)
+        user = User(
+            username=username,
+            email=username,
+            first_name=first_name,
+            last_name=last_name,
+        )
         user.set_password(password)
         user.save()
         return user

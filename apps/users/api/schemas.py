@@ -1,6 +1,6 @@
 from drf_spectacular.utils import extend_schema
 
-from apps.users.serializers import role_serializer,user_serializer
+from apps.users.serializers import role_serializer, user_serializer
 from apps.users.serializers.auth_serializer import (
     LoginSerializer,
     PasswordResetConfirmSerializer,

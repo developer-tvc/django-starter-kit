@@ -1,6 +1,6 @@
 from django.urls import path
 
-from apps.users.api import auth_views, role_views,user_views
+from apps.users.api import auth_views, role_views, user_views
 
 urlpatterns = [
     path("login/", auth_views.LoginView.as_view(), name="login"),
@@ -53,7 +53,10 @@ urlpatterns = [
         name="password_reset_confirm",
     ),
     path("logout/", auth_views.LogoutView.as_view(), name="logout"),
-
     path("users/", user_views.UserListCreateView.as_view(), name="user-list-create"),
-    path("users/<int:user_id>/", user_views.UserRetrieveUpdateDeleteView.as_view(), name="user-detail"),
+    path(
+        "users/<int:user_id>/",
+        user_views.UserRetrieveUpdateDeleteView.as_view(),
+        name="user-detail",
+    ),
 ]
