@@ -1,6 +1,7 @@
 from drf_spectacular.utils import extend_schema
 
-from apps.users.serializers import role_serializer, user_serializer
+from apps.users.serializers import (profile_serializer, role_serializer,
+                                    user_serializer)
 from apps.users.serializers.auth_serializer import (
     LoginSerializer, PasswordResetConfirmSerializer,
     PasswordResetRequestSerializer)
@@ -218,5 +219,27 @@ user_delete_schema = extend_schema(
     responses={
         200: dict,
         404: dict,
+    },
+)
+
+
+profile_view_schema = extend_schema(
+    tags=["Profile"],
+    summary="Profile View",
+    description="Retrieve current user profile.",
+    responses={
+        200: profile_serializer.ProfileViewSerializer,
+        401: dict,
+    },
+)
+
+profile_update_schema = extend_schema(
+    tags=["Profile"],
+    summary="Profile Update",
+    description="Update current user profile.",
+    request=profile_serializer.ProfileUpdateSerializer,
+    responses={
+        200: profile_serializer.ProfileViewSerializer,
+        401: dict,
     },
 )

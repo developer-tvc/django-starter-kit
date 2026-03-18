@@ -17,6 +17,14 @@ class User(AbstractUser):
     EMAIL_FIELD = "username"
     USERNAME_FIELD = "username"
     REQUIRED_FIELDS = ["first_name", "last_name"]
+    phone_number = models.CharField(max_length=15, blank=True, null=True)
+    avatar_url = models.URLField(blank=True, null=True)
+    is_email_verified = models.BooleanField(default=False)
+    failed_login_attempts = models.IntegerField(default=0)
+    is_locked = models.BooleanField(default=False)
+    locked_until = models.DateTimeField(blank=True, null=True)
+    last_failed_login_at = models.DateTimeField(blank=True, null=True)
+    ip_address = models.CharField(max_length=45, blank=True, null=True)
 
     @property
     def full_name(self):

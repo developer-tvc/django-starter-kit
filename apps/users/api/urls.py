@@ -1,6 +1,6 @@
 from django.urls import path
 
-from apps.users.api import auth_views, role_views, user_views
+from apps.users.api import auth_views, profile_views, role_views, user_views
 
 urlpatterns = [
     path("login/", auth_views.LoginView.as_view(), name="login"),
@@ -59,4 +59,5 @@ urlpatterns = [
         user_views.UserRetrieveUpdateDeleteView.as_view(),
         name="user-detail",
     ),
+    path("profile/", profile_views.ProfileView.as_view(), name="profile"),
 ]
