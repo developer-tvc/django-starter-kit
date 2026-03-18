@@ -7,13 +7,13 @@ from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenBlacklistView, TokenRefreshView
 
-from apps.users.api.schemas import (login_schema, logout_schema,
+from apps.users.api.schemas import (email_verification_schema, login_schema,
+                                    logout_schema,
                                     password_reset_confirm_schema,
-                                    password_reset_request_schema,
-                                    email_verification_schema)
+                                    password_reset_request_schema)
 from apps.users.serializers.auth_serializer import (
-    LoginSerializer, PasswordResetConfirmSerializer,
-    PasswordResetRequestSerializer, EmailVerificationSerializer)
+    EmailVerificationSerializer, LoginSerializer,
+    PasswordResetConfirmSerializer, PasswordResetRequestSerializer)
 from apps.users.services.auth_service import AuthService
 
 
@@ -107,6 +107,8 @@ class LogoutView(APIView):
                 {"detail": f"Invalid or expired token: {str(e)}"},
                 status=status.HTTP_401_UNAUTHORIZED,
             )
+
+
 class EmailVerificationView(APIView):
     @email_verification_schema
     def post(self, request):

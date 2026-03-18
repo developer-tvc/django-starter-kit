@@ -16,7 +16,7 @@ class AuthService:
     def login(username: str, password: str):
 
         user = authenticate(username=username, password=password)
-        
+
         if user is None:
             raise AuthenticationFailed("Invalid username or password")
 

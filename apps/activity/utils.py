@@ -20,7 +20,6 @@ def get_diff(old, new):
     return {"old": old_data, "new": new_data}
 
 
-
 def serialize_instance(instance):
     return {
         field.name: str(getattr(instance, field.name))
