@@ -1,12 +1,13 @@
-from rest_framework.views import APIView
 from rest_framework import status
-from apps.users.services.user_service import UserService
-from apps.users.serializers import user_serializer
+from rest_framework.views import APIView
+
 from apps.generics.permissions import HasPermission, IsAuthenticated
-from apps.users.api import schemas
-from apps.users import constants
 from apps.generics.responses import api_response
+from apps.users import constants
+from apps.users.api import schemas
 from apps.users.selectors.user_selectors import get_user
+from apps.users.serializers import user_serializer
+from apps.users.services.user_service import UserService
 
 
 class UserListCreateView(APIView):

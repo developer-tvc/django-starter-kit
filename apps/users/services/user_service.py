@@ -1,4 +1,4 @@
-from apps.users.models import User, Role
+from apps.users.models import Role, User
 from apps.users.selectors.user_selectors import get_user, list_users
 
 
