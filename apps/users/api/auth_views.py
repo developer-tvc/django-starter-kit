@@ -28,7 +28,7 @@ class LoginView(APIView):
         serializer.is_valid(raise_exception=True)
 
         tokens = AuthService.login(
-            serializer.validated_data["username"], serializer.validated_data["password"]
+            serializer.validated_data["username"], serializer.validated_data["password"], request
         )
 
         return Response(tokens, status=status.HTTP_200_OK)

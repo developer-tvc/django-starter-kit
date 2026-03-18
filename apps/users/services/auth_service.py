@@ -6,6 +6,10 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from apps.generics.utils.token_utils import (create_password_reset_token,
                                              decode_password_reset_token)
 from apps.notifications.services.email_service import EmailService
+from apps.users.selectors.auth_selectors import get_client_ip
+from apps.users.selectors.user_selectors import get_user_by_username
+from django.conf import settings
+from datetime import timedelta
 
 User = get_user_model()
 
@@ -13,17 +17,73 @@ User = get_user_model()
 class AuthService:
 
     @staticmethod
-    def login(username: str, password: str):
-
+    def login(username: str, password: str, request):
         user = authenticate(username=username, password=password)
+        now = timezone.now()
+        get_user=get_user_by_username(username)
+        
+        if settings.LOGIN_LOCK_ENABLED == "True":
+            # If account is locked and still within lock window
+            if get_user.is_locked and get_user.locked_until and get_user.locked_until > now:
+                remaining_seconds = int((get_user.locked_until - now).total_seconds())
+                remaining_minutes = remaining_seconds // 60
+                remaining_seconds = remaining_seconds % 60
+                raise AuthenticationFailed(
+                    f"Account locked. Try again in {remaining_minutes}m {remaining_seconds}s"
+                )
 
-        if user is None:
+            # If lock time expired → reset lock
+            if get_user.is_locked and get_user.locked_until and get_user.locked_until <= now:
+                get_user.is_locked = False
+                get_user.failed_login_attempts = 0
+                get_user.locked_until = None
+                get_user.save(update_fields=["is_locked", "failed_login_attempts", "locked_until"])
+
+        # If lock is disabled but lock time expired → reset lock
+        elif settings.LOGIN_LOCK_ENABLED == "False" and get_user.is_locked and get_user.locked_until:
+            get_user.is_locked = False
+            get_user.failed_login_attempts = 0
+            get_user.locked_until = None
+            get_user.save(update_fields=["is_locked", "failed_login_attempts", "locked_until"])
+
+        if not user:
+            # Password check (already done via authenticate, but you can add manual check if needed)
+            if not get_user.check_password(password):
+                if settings.LOGIN_LOCK_ENABLED == "True":
+                    get_user.failed_login_attempts += 1
+
+                    # Lock account if attempts exceed maximum
+                    if int(get_user.failed_login_attempts) >= int(settings.LOGIN_MAX_ATTEMPTS):
+                        get_user.is_locked = True
+                        get_user.locked_until = timezone.now() + timedelta(minutes=int(settings.LOGIN_LOCK_MINUTES))
+
+                    get_user.save(update_fields=["failed_login_attempts", "is_locked", "locked_until"])
+
+            raise AuthenticationFailed("Invalid username or password")
+            # Optionally, track failed login globally here
             raise AuthenticationFailed("Invalid username or password")
 
         if not user.is_active:
             raise AuthenticationFailed("Account is disabled")
+
         if not user.is_email_verified:
             raise AuthenticationFailed("Account is not verified")
+
+        now = timezone.now()     
+
+        # Reset failed attempts on successful login
+        if settings.LOGIN_LOCK_ENABLED == "True":
+            user.failed_login_attempts = 0
+            user.is_locked = False
+            user.locked_until = None
+            user.save(update_fields=["failed_login_attempts", "is_locked", "locked_until"])
+
+        # Update last login and IP
+        user.last_login = now
+        user.ip_address = get_client_ip(request)
+        user.save(update_fields=["last_login", "ip_address"])
+
+        # Issue JWT tokens
         refresh = RefreshToken.for_user(user)
 
         return {
@@ -31,7 +91,6 @@ class AuthService:
             "access": str(refresh.access_token),
             "refresh": str(refresh),
         }
-
     @staticmethod
     def request_password_reset(email: str):
         try:
