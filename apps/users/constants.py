@@ -13,3 +13,8 @@ USER_PERMISSION = "user_permission:view"
 
 ASSIGN_ROLE = "assign_role:create"
 UNASSIGN_ROLE = "unassign_role:delete"
+
+USER_VIEW = "user:view"
+USER_CREATE = "user:create"
+USER_UPDATE = "user:update"
+USER_DELETE = "user:delete"

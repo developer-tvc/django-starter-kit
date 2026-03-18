@@ -1,6 +1,6 @@
 from drf_spectacular.utils import extend_schema
 
-from apps.users.serializers import role_serializer
+from apps.users.serializers import role_serializer,user_serializer
 from apps.users.serializers.auth_serializer import (
     LoginSerializer,
     PasswordResetConfirmSerializer,
@@ -169,4 +169,56 @@ logout_schema = extend_schema(
     description="Logout user by blacklisting the refresh token.",
     request=dict,
     responses={200: dict, 400: dict, 401: dict},
+)
+
+
+user_list_schema = extend_schema(
+    tags=["Users"],
+    summary="List Users",
+    description="Returns all users in the system.",
+    responses={
+        200: user_serializer.UserListSerializer(many=True),
+    },
+)
+
+user_create_schema = extend_schema(
+    tags=["Users"],
+    summary="Create User",
+    description="Create a new user in the system.",
+    request=user_serializer.UserCreateSerializer,
+    responses={
+        201: user_serializer.UserListSerializer,
+        400: dict,
+    },
+)
+
+user_retrieve_schema = extend_schema(
+    tags=["Users"],
+    summary="Retrieve User",
+    description="Retrieve a user by ID.",
+    responses={
+        200: user_serializer.UserListSerializer,
+        404: dict,
+    },
+)
+
+user_update_schema = extend_schema(
+    tags=["Users"],
+    summary="Update User",
+    description="Update a user by ID.",
+    request=user_serializer.UserUpdateSerializer,
+    responses={
+        200: user_serializer.UserListSerializer,
+        404: dict,
+    },
+)
+
+user_delete_schema = extend_schema(
+    tags=["Users"],
+    summary="Delete User",
+    description="Delete a user by ID.",
+    responses={
+        200: dict,
+        404: dict,
+    },
 )

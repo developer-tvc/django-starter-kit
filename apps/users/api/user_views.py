@@ -1,0 +1,95 @@
+from rest_framework.views import APIView
+from rest_framework import status
+from apps.users.services.user_service import UserService
+from apps.users.serializers import user_serializer
+from apps.generics.permissions import HasPermission,IsAuthenticated
+from apps.users.api import schemas
+from apps.users import constants
+from apps.generics.responses import api_response
+from apps.users.selectors.user_selectors import get_user
+class UserListCreateView(APIView):
+    permission_classes = [HasPermission,IsAuthenticated]
+    # Define permissions for each method
+    method_permissions = {
+        "GET": constants.USER_VIEW,
+        "POST": constants.USER_CREATE,
+    }
+
+    def get_permissions(self):
+        # Dynamically set the required_permission attribute based on HTTP method
+        self.required_permission = self.method_permissions.get(self.request.method)
+        return super().get_permissions()
+
+    @schemas.user_list_schema
+    def get(self, request):
+        users = UserService.list_users()
+        serializer = user_serializer.UserListSerializer(users, many=True)
+        return api_response(
+            message="Users retrieved successfully.", data=serializer.data
+        )
+
+    @schemas.user_create_schema
+    def post(self, request):
+        serializer = user_serializer.UserCreateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = UserService.create_user(
+            username=serializer.validated_data["username"],
+            password=request.data.get("password"),
+            first_name=request.data.get("first_name"),
+            last_name=request.data.get("last_name"),
+        )
+        return api_response(
+            message="User created successfully.", data=user_serializer.UserListSerializer(user).data, status_code=status.HTTP_201_CREATED
+        )
+
+
+class UserRetrieveUpdateDeleteView(APIView):
+    permission_classes = [HasPermission,IsAuthenticated]
+    # Define permissions for each method
+    method_permissions = {
+        "GET": constants.USER_VIEW,
+        "PUT": constants.USER_UPDATE,
+        "DELETE": constants.USER_DELETE,
+    }
+
+    def get_permissions(self):
+        # Dynamically set the required_permission attribute based on HTTP method
+        self.required_permission = self.method_permissions.get(self.request.method)
+        return super().get_permissions()
+
+    @schemas.user_retrieve_schema
+    def get(self, request, user_id):
+        user = get_user(user_id)
+        if not user:
+            return api_response(
+                message="User not found", status_code=status.HTTP_404_NOT_FOUND
+            )
+        serializer = user_serializer.UserListSerializer(user)
+        return api_response(
+            message="User retrieved successfully.", data=serializer.data
+        )
+
+    @schemas.user_update_schema
+    def put(self, request, user_id):
+        serializer = user_serializer.UserUpdateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = UserService.update_user(user_id, serializer.validated_data)
+        if not user:
+            return api_response(
+                message="User not found", status_code=status.HTTP_404_NOT_FOUND
+            )
+        serializer = user_serializer.UserListSerializer(user)
+        return api_response(
+            message="User updated successfully.", data=serializer.data
+        )
+
+    @schemas.user_delete_schema
+    def delete(self, request, user_id):
+        user = UserService.delete_user(user_id)
+        if not user:
+            return api_response(
+                message="User not found", status_code=status.HTTP_404_NOT_FOUND
+            )
+        return api_response(
+            message="User deleted successfully.", status_code=status.HTTP_200_OK
+        )
