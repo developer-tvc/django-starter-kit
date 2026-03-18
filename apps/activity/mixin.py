@@ -88,3 +88,30 @@ class ActivityMixin(models.Model):
                 new_value=diff["new"],
                 description=description,
             )
+
+    def delete(self, *args, **kwargs):
+        user = getattr(threading.current_thread(), "_django_user", None)
+        if isinstance(user, AnonymousUser):
+            user = None
+
+        ct = ContentType.objects.get_for_model(self)
+        model_name = self.__class__.__name__
+        label = constants.LOG_DESCRIPTION.get(model_name, model_name.lower())
+
+        # Serialize the instance before deleting
+        old_value = serialize_instance(self)
+
+        # Create activity log
+        if user:
+            ActivityLog.objects.create(
+                user=user,
+                action=f"{label} deleted",
+                content_type=ct,
+                object_id=self.pk,
+                old_value=old_value,
+                new_value=None,
+                description=f"{label} deleted by {user.first_name} {user.last_name}",
+            )
+
+        # Delete the instance
+        super().delete(*args, **kwargs)
