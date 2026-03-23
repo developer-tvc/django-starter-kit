@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 import os
 from datetime import timedelta
 from pathlib import Path
+import sys
 
 from config import utils
 
@@ -52,7 +53,8 @@ THIRD_PARTY_APPS = [
 LOCAL_APPS = [
     "apps.users",
     "apps.notifications",
-    "apps.activity"
+    "apps.activity",
+    "apps.monitoring"
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -67,6 +69,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'apps.generics.middleware.current_user_middleware.CurrentUserMiddleware',
+    'apps.generics.middleware.correlation_id_middleware.CorrelationIdMiddleware',
+    'apps.generics.middleware.exception_handler.GlobalExceptionMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -232,3 +236,46 @@ EMAIL_ENABLED = os.getenv("EMAIL_ENABLED")
 SMS_ENABLED = os.getenv("SMS_ENABLED")
 IN_APP_ENABLED = os.getenv("IN_APP_ENABLED")
 WEBHOOK_ENABLED = os.getenv("WEBHOOK_ENABLED")
+
+
+LOG_DIR = os.path.join(BASE_DIR, "logs")
+os.makedirs(LOG_DIR, exist_ok=True)
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "json": {
+            "()": "apps.generics.utils.json_formatter.CustomJSONFormatter",
+        },
+    },
+    "filters": {
+        "correlation_id": {
+            "()": "apps.generics.utils.logging_filters.CorrelationIdFilter",
+        },
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "json",
+            "filters": ["correlation_id"],
+        },
+        "file": {
+            "class": "logging.FileHandler",
+            "formatter": "json",
+            "filename": os.path.join(LOG_DIR, "app.log"),
+            "filters": ["correlation_id"],
+        },
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console", "file"],
+            "level": "INFO",
+            "propagate": True,
+        },
+        "apps": {
+            "handlers": ["console", "file"],
+            "level": "INFO",
+            "propagate": False,
+        },
+    },
+}

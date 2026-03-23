@@ -1,9 +1,7 @@
-# activity/middleware.py
 import threading
 
 from django.contrib.auth.models import AnonymousUser
 from django.http import HttpRequest, JsonResponse
-from rest_framework.exceptions import AuthenticationFailed
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.exceptions import InvalidToken
 
@@ -12,7 +10,6 @@ _thread_locals = threading.local()
 
 def get_current_user():
     return getattr(_thread_locals, "user", None)
-
 
 def get_user(request: HttpRequest):
     """
@@ -47,6 +44,5 @@ class CurrentUserMiddleware:
 
         # Setting logged user in thread
         setattr(threading.current_thread(), "_django_user", user)
-
         _thread_locals.user = request.user if request.user.is_authenticated else None
         return self.get_response(request)

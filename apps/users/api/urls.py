@@ -53,9 +53,9 @@ urlpatterns = [
         name="password_reset_confirm",
     ),
     path("logout/", auth_views.LogoutView.as_view(), name="logout"),
-    path("users/", user_views.UserListCreateView.as_view(), name="user-list-create"),
+    path("", user_views.UserListCreateView.as_view(), name="user-list-create"),
     path(
-        "users/<int:user_id>/",
+        "<int:user_id>/",
         user_views.UserRetrieveUpdateDeleteView.as_view(),
         name="user-detail",
     ),
