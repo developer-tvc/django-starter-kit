@@ -1,5 +1,6 @@
 from apps.users.models import Role, User
 from apps.users.selectors.user_selectors import get_user, list_users
+from apps.notifications.tasks.notification_tasks import send_notification_task
 
 
 class UserService:
@@ -9,7 +10,7 @@ class UserService:
         return list_users()
 
     @staticmethod
-    def create_user(username: str, password: str, first_name: str, last_name: str):
+    def create_user(username: str, password: str, first_name: str, last_name: str, request):
         user = User(
             username=username,
             email=username,
@@ -18,6 +19,13 @@ class UserService:
         )
         user.set_password(password)
         user.save()
+        # send notification
+        send_notification_task.delay(
+            [user.id], #Change as per requirement (list of user ids)
+            "New User Registered",
+            f"{user.first_name} {user.last_name} created by {request.user.first_name} {request.user.last_name}",
+            ["in_app"]
+        )
         return user
 
     @staticmethod
