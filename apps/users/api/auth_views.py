@@ -15,13 +15,18 @@ from apps.users.serializers.auth_serializer import (
     EmailVerificationSerializer, LoginSerializer,
     PasswordResetConfirmSerializer, PasswordResetRequestSerializer)
 from apps.users.services.auth_service import AuthService
-
+from django.utils.decorators import method_decorator
+from django_ratelimit.decorators import ratelimit
 
 class LoginView(APIView):
-
+    """
+    Login endpoint with failed login tracking, account lock, and rate limiting
+    """
     authentication_classes = []  # disables authentication
     permission_classes = []
-
+    @method_decorator(
+        ratelimit(key='ip', rate='5/m', block=True)  # 5 requests per minute per IP
+    )
     @login_schema
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
