@@ -265,6 +265,28 @@ argon2 = ["argon2-cffi (>=23.1.0)"]
 bcrypt = ["bcrypt (>=4.1.1)"]
 
 [[package]]
+name = "django-csp"
+version = "4.0"
+description = "Django Content Security Policy support."
+optional = false
+python-versions = "*"
+groups = ["main"]
+files = [
+    {file = "django_csp-4.0-py3-none-any.whl", hash = "sha256:d5a0a05463a6b75a4f1fc1828c58c89af8db9364d09fc6e12f122b4d7f3d00dc"},
+    {file = "django_csp-4.0.tar.gz", hash = "sha256:b27010bb702eb20a3dad329178df2b61a2b82d338b70fbdc13c3a3bd28712833"},
+]
+
+[package.dependencies]
+django = ">=4.2"
+packaging = "*"
+
+[package.extras]
+dev = ["django-stubs[compatible-mypy]", "jinja2 (>=2.9.6)", "mypy", "pre-commit", "pytest", "pytest-cov", "pytest-django", "pytest-ruff", "sphinx", "sphinx-rtd-theme", "tox", "tox-gh-actions", "types-setuptools"]
+jinja2 = ["jinja2 (>=2.9.6)"]
+tests = ["jinja2 (>=2.9.6)", "pytest", "pytest-cov", "pytest-django", "pytest-ruff"]
+typing = ["django-stubs[compatible-mypy]", "jinja2 (>=2.9.6)", "mypy", "pytest", "pytest-django", "types-setuptools"]
+
+[[package]]
 name = "django-ratelimit"
 version = "4.1.0"
 description = "Cache-based rate-limiting for Django."
@@ -1028,4 +1050,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.12"
-content-hash = "a88c4c497e496800f2905ca3aa6513164a40c2813347212e8ac275b7557ccb36"
+content-hash = "011f72b50b82f5729251f237b2a36ef130bb91122b77e617c9fc225878cb870d"

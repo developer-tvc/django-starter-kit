@@ -48,6 +48,7 @@ THIRD_PARTY_APPS = [
     "rest_framework",
     "rest_framework_simplejwt.token_blacklist",
     "drf_spectacular",
+    "csp"
 ]
 
 LOCAL_APPS = [
@@ -71,6 +72,7 @@ MIDDLEWARE = [
     'apps.generics.middleware.current_user_middleware.CurrentUserMiddleware',
     'apps.generics.middleware.correlation_id_middleware.CorrelationIdMiddleware',
     'apps.generics.middleware.exception_handler.GlobalExceptionMiddleware',
+    'csp.middleware.CSPMiddleware'
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -189,6 +191,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 # CORS Configurations
+CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOWED_ORIGINS = ['__REPLACE_ME_IN_ENV_SETTINGS__']
 CSRF_TRUSTED_ORIGINS = ['__REPLACE_ME_IN_ENV_SETTINGS__']
 CORS_EXPOSE_HEADERS = [
@@ -278,4 +281,47 @@ LOGGING = {
             "propagate": False,
         },
     },
+}
+
+# HTTPS
+SECURE_SSL_REDIRECT = not DEBUG
+
+# HSTS
+SECURE_HSTS_SECONDS = int(os.getenv("SECURE_HSTS_SECONDS", 0))
+SECURE_HSTS_INCLUDE_SUBDOMAINS = not DEBUG
+SECURE_HSTS_PRELOAD = not DEBUG
+
+# Cookies
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = not DEBUG
+SESSION_COOKIE_HTTPONLY = True
+CSRF_COOKIE_HTTPONLY = True
+
+# Sessions
+SESSION_COOKIE_AGE = 3600
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+# Security headers
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = "DENY"
+SECURE_REFERRER_POLICY = "same-origin"
+
+#Content Security Policy (CSP)
+CONTENT_SECURITY_POLICY = {
+    "DIRECTIVES": {
+        "default-src": ("'self'",),
+        "img-src": ("'self'", "data:", "https:"),
+        "script-src": (
+            "'self'",
+            "'unsafe-inline'",   # required for swagger
+            "'unsafe-eval'",     # required for swagger
+            "https:",
+        ),
+        "style-src": (
+            "'self'",
+            "'unsafe-inline'",   # required for swagger UI styles
+            "https:",
+        ),
+    }
 }
