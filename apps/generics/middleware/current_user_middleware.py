@@ -11,6 +11,7 @@ _thread_locals = threading.local()
 def get_current_user():
     return getattr(_thread_locals, "user", None)
 
+
 def get_user(request: HttpRequest):
     """
     Extract authenticated user from JWT.

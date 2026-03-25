@@ -7,25 +7,34 @@ from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenBlacklistView, TokenRefreshView
 
-from apps.users.api.schemas import (email_verification_schema, login_schema,
-                                    logout_schema,
-                                    password_reset_confirm_schema,
-                                    password_reset_request_schema)
+from apps.users.api.schemas import (
+    email_verification_schema,
+    login_schema,
+    logout_schema,
+    password_reset_confirm_schema,
+    password_reset_request_schema,
+)
 from apps.users.serializers.auth_serializer import (
-    EmailVerificationSerializer, LoginSerializer,
-    PasswordResetConfirmSerializer, PasswordResetRequestSerializer)
+    EmailVerificationSerializer,
+    LoginSerializer,
+    PasswordResetConfirmSerializer,
+    PasswordResetRequestSerializer,
+)
 from apps.users.services.auth_service import AuthService
 from django.utils.decorators import method_decorator
 from django_ratelimit.decorators import ratelimit
+
 
 class LoginView(APIView):
     """
     Login endpoint with failed login tracking, account lock, and rate limiting
     """
+
     authentication_classes = []  # disables authentication
     permission_classes = []
+
     @method_decorator(
-        ratelimit(key='ip', rate='5/m', block=True)  # 5 requests per minute per IP
+        ratelimit(key="ip", rate="5/m", block=True)  # 5 requests per minute per IP
     )
     @login_schema
     def post(self, request):
@@ -33,7 +42,9 @@ class LoginView(APIView):
         serializer.is_valid(raise_exception=True)
 
         tokens = AuthService.login(
-            serializer.validated_data["username"], serializer.validated_data["password"], request
+            serializer.validated_data["username"],
+            serializer.validated_data["password"],
+            request,
         )
 
         return Response(tokens, status=status.HTTP_200_OK)

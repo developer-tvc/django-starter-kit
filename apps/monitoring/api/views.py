@@ -5,6 +5,7 @@ from rest_framework.views import APIView
 
 from apps.monitoring.api.schemas import health_schema, readiness_schema
 
+
 @health_schema
 class HealthView(APIView):
     def get(self, request):
@@ -15,7 +16,10 @@ class HealthView(APIView):
             db_status = "ok"
         except Exception:
             db_status = "error"
-        return JsonResponse({"status": "ok" if db_status=="ok" else "error", "database": db_status})
+        return JsonResponse(
+            {"status": "ok" if db_status == "ok" else "error", "database": db_status}
+        )
+
 
 @readiness_schema
 class ReadinessView(APIView):
@@ -39,4 +43,7 @@ class ReadinessView(APIView):
             details["redis"] = f"error: {str(e)}"
             ready = False
 
-        return JsonResponse({"status": "ready" if ready else "not ready", "details": details}, status=200 if ready else 503)
+        return JsonResponse(
+            {"status": "ready" if ready else "not ready", "details": details},
+            status=200 if ready else 503,
+        )

@@ -1,6 +1,7 @@
 from apps.generics.mixins import GenericModelMixin
 from django.db import models
 
+
 class NotificationLog(GenericModelMixin):
 
     TYPE_CHOICES = [
@@ -24,9 +25,7 @@ class NotificationLog(GenericModelMixin):
     title = models.CharField(max_length=255)
     message = models.TextField()
 
-    status = models.CharField(
-        max_length=20, choices=STATUS_CHOICES, default="pending"
-    )
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending")
     retry_count = models.IntegerField(default=0)
 
     payload = models.JSONField(null=True, blank=True)

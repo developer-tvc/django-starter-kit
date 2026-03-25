@@ -1,4 +1,9 @@
-from drf_spectacular.utils import OpenApiExample, OpenApiResponse, OpenApiTypes, extend_schema
+from drf_spectacular.utils import (
+    OpenApiExample,
+    OpenApiResponse,
+    OpenApiTypes,
+    extend_schema,
+)
 
 health_schema = extend_schema(
     tags=["Monitoring"],
@@ -11,10 +16,7 @@ health_schema = extend_schema(
             examples=[
                 OpenApiExample(
                     "Success",
-                    value={
-                        "status": "ok",
-                        "database": "ok"
-                    },
+                    value={"status": "ok", "database": "ok"},
                 ),
             ],
         ),
@@ -34,13 +36,10 @@ readiness_schema = extend_schema(
                     "Success",
                     value={
                         "status": "ready",
-                        "details": {
-                            "database": "ok",
-                            "redis": "ok"
-                        }
+                        "details": {"database": "ok", "redis": "ok"},
                     },
                 ),
             ],
         ),
-    }
+    },
 )

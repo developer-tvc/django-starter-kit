@@ -1,5 +1,6 @@
 from apps.activity.models import UserDevice
 
+
 def track_device(request, user):
     device_id = getattr(request, "device_id", None)
 
@@ -12,7 +13,7 @@ def track_device(request, user):
         defaults={
             "user_agent": request.user_agent,
             "ip_address": request.ip_address,
-        }
+        },
     )
 
     if not created:

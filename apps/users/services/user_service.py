@@ -10,7 +10,9 @@ class UserService:
         return list_users()
 
     @staticmethod
-    def create_user(username: str, password: str, first_name: str, last_name: str, request):
+    def create_user(
+        username: str, password: str, first_name: str, last_name: str, request
+    ):
         user = User(
             username=username,
             email=username,
@@ -21,10 +23,10 @@ class UserService:
         user.save()
         # send notification
         send_notification_task.delay(
-            [user.id], #Change as per requirement (list of user ids)
+            [user.id],  # Change as per requirement (list of user ids)
             "New User Registered",
             f"{user.first_name} {user.last_name} created by {request.user.first_name} {request.user.last_name}",
-            ["in_app"]
+            ["in_app"],
         )
         return user
 

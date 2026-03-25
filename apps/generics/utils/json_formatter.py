@@ -3,6 +3,8 @@ import logging
 import json
 from datetime import datetime
 import threading
+
+
 class CustomJSONFormatter(logging.Formatter):
     """
     Formats log records as JSON with timestamp, level, module, and message.
@@ -18,12 +20,13 @@ class CustomJSONFormatter(logging.Formatter):
             "module": record.module,
             "correlation_id": getattr(record, "correlation_id", None),
             "user_id": user_id,
-            "duration_ms": getattr(threading.current_thread(), "_request_duration_ms", None),
+            "duration_ms": getattr(
+                threading.current_thread(), "_request_duration_ms", None
+            ),
         }
 
         # Include extra fields if present
         if hasattr(record, "correlation_id"):
             log_record["correlation_id"] = record.correlation_id
-
 
         return json.dumps(log_record)

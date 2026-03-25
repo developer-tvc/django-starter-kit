@@ -1,7 +1,9 @@
 from django.conf import settings
 from django.http import JsonResponse
 import logging
+
 logger = logging.getLogger(__name__)
+
 
 class IPWhitelistMiddleware:
     def __init__(self, get_response):
@@ -17,8 +19,7 @@ class IPWhitelistMiddleware:
             if ip not in self.allowed_ips:
                 logger.error(f"Access denied for IP: {ip}")
                 return JsonResponse(
-                    {"detail": "Access denied: IP not allowed"},
-                    status=403
+                    {"detail": "Access denied: IP not allowed"}, status=403
                 )
 
         return self.get_response(request)

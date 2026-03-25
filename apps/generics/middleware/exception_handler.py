@@ -7,6 +7,7 @@ from datetime import datetime
 
 logger = logging.getLogger("apps")
 
+
 class GlobalExceptionMiddleware(MiddlewareMixin):
     """
     Catch all unhandled exceptions globally,

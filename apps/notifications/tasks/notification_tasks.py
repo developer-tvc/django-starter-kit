@@ -3,9 +3,11 @@ from apps.notifications.services.notification_service import NotificationService
 from apps.notifications.models import NotificationLog
 from django.utils import timezone
 
+
 @shared_task(bind=True, max_retries=3)
 def send_notification_task(self, user_ids, title, message, channels):
     from apps.users.models import User
+
     users = User.objects.filter(id__in=user_ids)
     service = NotificationService()
 

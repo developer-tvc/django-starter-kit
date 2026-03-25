@@ -1,4 +1,3 @@
-
 from django_ratelimit.exceptions import Ratelimited
 from rest_framework.response import Response
 from rest_framework import status
@@ -27,7 +26,6 @@ class UnauthorizedError(Exception):
     def __init__(self, message="You are not allowed to perform this operation."):
         self.message = message
         super().__init__(self.message)
-
 
 
 def custom_exception_handler(exc, context):
