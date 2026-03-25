@@ -10,6 +10,7 @@ from apps.users.selectors.auth_selectors import get_client_ip
 from apps.users.selectors.user_selectors import get_user_by_username
 from django.conf import settings
 from datetime import timedelta
+from apps.activity.services.device_track import track_device
 
 User = get_user_model()
 
@@ -85,7 +86,7 @@ class AuthService:
 
         # Issue JWT tokens
         refresh = RefreshToken.for_user(user)
-
+        track_device(request, user)
         return {
             "token_type": "Bearer",
             "access": str(refresh.access_token),

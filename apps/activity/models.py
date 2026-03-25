@@ -27,3 +27,23 @@ class ActivityLog(models.Model):
 
     description = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+
+
+
+class UserDevice(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+
+    device_id = models.CharField(max_length=255)  # unique per device
+    device_name = models.CharField(max_length=255, null=True, blank=True)
+
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    user_agent = models.TextField()
+
+    is_active = models.BooleanField(default=True)
+
+    last_login = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user_id} - {self.device_name or 'Unknown'}"

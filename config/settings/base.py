@@ -13,6 +13,7 @@ import os
 from datetime import timedelta
 from pathlib import Path
 import sys
+import json
 
 from config import utils
 
@@ -63,6 +64,7 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'apps.generics.middleware.ip_whitelist_middleware.IPWhitelistMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -72,7 +74,8 @@ MIDDLEWARE = [
     'apps.generics.middleware.current_user_middleware.CurrentUserMiddleware',
     'apps.generics.middleware.correlation_id_middleware.CorrelationIdMiddleware',
     'apps.generics.middleware.exception_handler.GlobalExceptionMiddleware',
-    'csp.middleware.CSPMiddleware'
+    'csp.middleware.CSPMiddleware',
+    'apps.generics.middleware.device_middleware.DeviceMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -325,3 +328,8 @@ CONTENT_SECURITY_POLICY = {
         ),
     }
 }
+
+
+
+
+IP_WHITELIST = json.loads(os.getenv("IP_WHITELIST", "[]"))
