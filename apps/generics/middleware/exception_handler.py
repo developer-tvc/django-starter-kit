@@ -1,9 +1,9 @@
-# apps/generics/middleware/global_exception_middleware.py
 import logging
 import traceback
+from datetime import datetime
+
 from django.http import JsonResponse
 from django.utils.deprecation import MiddlewareMixin
-from datetime import datetime
 
 logger = logging.getLogger("apps")
 

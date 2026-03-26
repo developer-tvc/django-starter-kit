@@ -1,5 +1,6 @@
-from apps.generics.mixins import GenericModelMixin
 from django.db import models
+
+from apps.generics.mixins import GenericModelMixin
 
 
 class NotificationLog(GenericModelMixin):

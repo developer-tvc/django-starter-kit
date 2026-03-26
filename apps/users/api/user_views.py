@@ -1,4 +1,5 @@
 from rest_framework import status
+from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.views import APIView
 
 from apps.generics.permissions import HasPermission, IsAuthenticated
@@ -8,7 +9,6 @@ from apps.users.api import schemas
 from apps.users.selectors.user_selectors import get_user
 from apps.users.serializers import user_serializer
 from apps.users.services.user_service import UserService
-from rest_framework.pagination import LimitOffsetPagination
 
 
 class UserListCreateView(APIView):

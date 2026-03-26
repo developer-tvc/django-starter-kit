@@ -1,7 +1,7 @@
-# app/core/middleware/logging_middleware.py
-import uuid
-import logging
 import json
+import logging
+import uuid
+
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 

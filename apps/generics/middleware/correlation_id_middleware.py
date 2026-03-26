@@ -1,8 +1,7 @@
-# apps/generics/middleware/correlation_id_middleware.py
-import threading
-import uuid
-import time
 import logging
+import threading
+import time
+import uuid
 
 logger = logging.getLogger("apps")  # your app logger
 _thread_locals = threading.local()

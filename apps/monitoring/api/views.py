@@ -1,6 +1,6 @@
-from django.http import JsonResponse
-from django.db import connection
 import redis
+from django.db import connection
+from django.http import JsonResponse
 from rest_framework.views import APIView
 
 from apps.monitoring.api.schemas import health_schema, readiness_schema

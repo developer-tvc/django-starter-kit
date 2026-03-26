@@ -1,8 +1,7 @@
-# apps/generics/utils/json_formatter.py
-import logging
 import json
-from datetime import datetime
+import logging
 import threading
+from datetime import datetime
 
 
 class CustomJSONFormatter(logging.Formatter):

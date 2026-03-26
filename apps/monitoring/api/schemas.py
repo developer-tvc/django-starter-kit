@@ -1,9 +1,5 @@
-from drf_spectacular.utils import (
-    OpenApiExample,
-    OpenApiResponse,
-    OpenApiTypes,
-    extend_schema,
-)
+from drf_spectacular.utils import (OpenApiExample, OpenApiResponse,
+                                   OpenApiTypes, extend_schema)
 
 health_schema = extend_schema(
     tags=["Monitoring"],

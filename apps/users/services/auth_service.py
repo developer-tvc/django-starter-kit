@@ -1,18 +1,17 @@
+from datetime import timedelta
+
+from django.conf import settings
 from django.contrib.auth import authenticate, get_user_model
 from django.utils import timezone
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from apps.generics.utils.token_utils import (
-    create_password_reset_token,
-    decode_password_reset_token,
-)
+from apps.activity.services.device_track import track_device
+from apps.generics.utils.token_utils import (create_password_reset_token,
+                                             decode_password_reset_token)
 from apps.notifications.services.email_service import EmailService
 from apps.users.selectors.auth_selectors import get_client_ip
 from apps.users.selectors.user_selectors import get_user_by_username
-from django.conf import settings
-from datetime import timedelta
-from apps.activity.services.device_track import track_device
 
 User = get_user_model()
 

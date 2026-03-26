@@ -9,11 +9,12 @@ https://docs.djangoproject.com/en/6.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
+
+import json
 import os
+import sys
 from datetime import timedelta
 from pathlib import Path
-import sys
-import json
 
 from config import utils
 
@@ -25,11 +26,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('SECRET_KEY')
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG', 'false').strip().lower() == 'true'
-ENVIRONMENT = utils.get_env_variable('ENV')
+DEBUG = os.getenv("DEBUG", "false").strip().lower() == "true"
+ENVIRONMENT = utils.get_env_variable("ENV")
 
 ALLOWED_HOSTS = []
 
@@ -49,53 +50,48 @@ THIRD_PARTY_APPS = [
     "rest_framework",
     "rest_framework_simplejwt.token_blacklist",
     "drf_spectacular",
-    "csp"
+    "csp",
 ]
 
-LOCAL_APPS = [
-    "apps.users",
-    "apps.notifications",
-    "apps.activity",
-    "apps.monitoring"
-]
+LOCAL_APPS = ["apps.users", "apps.notifications", "apps.activity", "apps.monitoring"]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
-    'django.middleware.security.SecurityMiddleware',
-    'apps.generics.middleware.ip_whitelist_middleware.IPWhitelistMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'apps.generics.middleware.current_user_middleware.CurrentUserMiddleware',
-    'apps.generics.middleware.correlation_id_middleware.CorrelationIdMiddleware',
-    'apps.generics.middleware.exception_handler.GlobalExceptionMiddleware',
-    'csp.middleware.CSPMiddleware',
-    'apps.generics.middleware.device_middleware.DeviceMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.security.SecurityMiddleware",
+    "apps.generics.middleware.ip_whitelist_middleware.IPWhitelistMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "apps.generics.middleware.current_user_middleware.CurrentUserMiddleware",
+    "apps.generics.middleware.correlation_id_middleware.CorrelationIdMiddleware",
+    "apps.generics.middleware.exception_handler.GlobalExceptionMiddleware",
+    "csp.middleware.CSPMiddleware",
+    "apps.generics.middleware.device_middleware.DeviceMiddleware",
 ]
 
-ROOT_URLCONF = 'config.urls'
+ROOT_URLCONF = "config.urls"
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'config.wsgi.application'
+WSGI_APPLICATION = "config.wsgi.application"
 
 
 # Database
@@ -111,53 +107,48 @@ DATABASES = {
     }
 }
 
-SSL_PATH = os.getenv('SSL_PATH')
+SSL_PATH = os.getenv("SSL_PATH")
 # Validate SSL path if it is set
 if SSL_PATH:
     utils.validate_file_path(SSL_PATH)
 # Conditionally add SSL options if the path is provided and valid
 if SSL_PATH and os.path.exists(SSL_PATH):
-    ssl_options = {
-        'ssl': {
-            'ca': SSL_PATH
-        },
-        'charset': 'utf8mb4'
-    }
+    ssl_options = {"ssl": {"ca": SSL_PATH}, "charset": "utf8mb4"}
 
-    DATABASES['default']['OPTIONS'] = ssl_options
+    DATABASES["default"]["OPTIONS"] = ssl_options
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
 
 
 REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
     ],
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.BasicAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.BasicAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
     ],
-    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
-    'EXCEPTION_HANDLER': 'apps.generics.exceptions.custom_exception_handler',
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    'PAGE_SIZE': 6,
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "EXCEPTION_HANDLER": "apps.generics.exceptions.custom_exception_handler",
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
+    "PAGE_SIZE": 6,
 }
 
 SPECTACULAR_SETTINGS = {
@@ -171,9 +162,9 @@ AUTH_USER_MODEL = "users.User"
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = "UTC"
 
 USE_I18N = True
 
@@ -183,16 +174,16 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / "media" 
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
 
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
 # CORS Configurations
@@ -209,12 +200,12 @@ CORS_EXPOSE_HEADERS = [
 
 # Django-REST-Framework simplejwt configurations
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
-    'ROTATE_REFRESH_TOKENS': True, # If True, a new refresh token is issued when the refresh token is used
-    'BLACKLIST_AFTER_ROTATION': True, # If True, the old refresh token is blacklisted when the refresh token is used
-    'AUTH_HEADER_TYPES': ('Bearer',),
-    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+    "ROTATE_REFRESH_TOKENS": True,  # If True, a new refresh token is issued when the refresh token is used
+    "BLACKLIST_AFTER_ROTATION": True,  # If True, the old refresh token is blacklisted when the refresh token is used
+    "AUTH_HEADER_TYPES": ("Bearer",),
+    "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
 }
 
 
@@ -234,10 +225,9 @@ CELERY_TASK_SERIALIZER = "json"
 
 EMAIL_VERIFICATION_ENABLED = os.getenv("EMAIL_VERIFICATION_ENABLED")
 
-LOGIN_MAX_ATTEMPTS=os.getenv("LOGIN_MAX_ATTEMPTS")
-LOGIN_LOCK_ENABLED=os.getenv("LOGIN_LOCK_ENABLED")
-LOGIN_LOCK_MINUTES=os.getenv("LOGIN_LOCK_MINUTES")
-
+LOGIN_MAX_ATTEMPTS = os.getenv("LOGIN_MAX_ATTEMPTS")
+LOGIN_LOCK_ENABLED = os.getenv("LOGIN_LOCK_ENABLED")
+LOGIN_LOCK_MINUTES = os.getenv("LOGIN_LOCK_MINUTES")
 
 
 EMAIL_ENABLED = os.getenv("EMAIL_ENABLED")
@@ -312,26 +302,24 @@ SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = "DENY"
 SECURE_REFERRER_POLICY = "same-origin"
 
-#Content Security Policy (CSP)
+# Content Security Policy (CSP)
 CONTENT_SECURITY_POLICY = {
     "DIRECTIVES": {
         "default-src": ("'self'",),
         "img-src": ("'self'", "data:", "https:"),
         "script-src": (
             "'self'",
-            "'unsafe-inline'",   # required for swagger
-            "'unsafe-eval'",     # required for swagger
+            "'unsafe-inline'",  # required for swagger
+            "'unsafe-eval'",  # required for swagger
             "https:",
         ),
         "style-src": (
             "'self'",
-            "'unsafe-inline'",   # required for swagger UI styles
+            "'unsafe-inline'",  # required for swagger UI styles
             "https:",
         ),
     }
 }
-
-
 
 
 IP_WHITELIST = json.loads(os.getenv("IP_WHITELIST", "[]"))

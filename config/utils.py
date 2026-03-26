@@ -13,7 +13,6 @@ def get_env_variable(var_name: str) -> str:
     return value
 
 
-
 def validate_file_path(file_path):
     """Validates if the given file path exists."""
     if file_path and not os.path.exists(file_path):

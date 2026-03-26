@@ -1,12 +1,10 @@
 from drf_spectacular.utils import extend_schema
 
-from apps.users.serializers import profile_serializer, role_serializer, user_serializer
+from apps.users.serializers import (profile_serializer, role_serializer,
+                                    user_serializer)
 from apps.users.serializers.auth_serializer import (
-    EmailVerificationSerializer,
-    LoginSerializer,
-    PasswordResetConfirmSerializer,
-    PasswordResetRequestSerializer,
-)
+    EmailVerificationSerializer, LoginSerializer,
+    PasswordResetConfirmSerializer, PasswordResetRequestSerializer)
 
 login_schema = extend_schema(
     tags=["Auth"],
