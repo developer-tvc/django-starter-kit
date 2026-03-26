@@ -1,6 +1,9 @@
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 
+from django.utils.decorators import method_decorator
+from django_ratelimit.decorators import ratelimit
+
 from apps.generics.responses import api_response
 from apps.users.api import schemas
 from apps.users.serializers import profile_serializer
@@ -10,6 +13,9 @@ from apps.users.services.profile_service import ProfileService
 class ProfileView(APIView):
     permission_classes = [IsAuthenticated]
 
+    @method_decorator(
+        ratelimit(key="ip", rate="5/m", block=True)  # 5 requests per minute per IP
+    )   
     @schemas.profile_view_schema
     def get(self, request):
         user = ProfileService.get_profile(request.user)
@@ -18,6 +24,9 @@ class ProfileView(APIView):
             message="Profile retrieved successfully.", data=serializer.data
         )
 
+    @method_decorator(
+        ratelimit(key="ip", rate="5/m", block=True)  # 5 requests per minute per IP
+    )   
     @schemas.profile_update_schema
     def patch(self, request):
         serializer = profile_serializer.ProfileUpdateSerializer(data=request.data)

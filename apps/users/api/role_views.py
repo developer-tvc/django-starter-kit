@@ -1,6 +1,9 @@
 from rest_framework import status
 from rest_framework.views import APIView
 
+from django.utils.decorators import method_decorator
+from django_ratelimit.decorators import ratelimit
+
 from apps.generics.permissions import HasPermission, IsAuthenticated
 from apps.generics.responses import api_response
 from apps.users import constants
@@ -24,6 +27,9 @@ class RoleListCreateView(APIView):
         self.required_permission = self.method_permissions.get(self.request.method)
         return super().get_permissions()
 
+    @method_decorator(
+        ratelimit(key="ip", rate="5/m", block=True)  # 5 requests per minute per IP
+    )   
     @schemas.role_list_schema
     def get(self, request):
         roles = list_roles()
@@ -32,6 +38,9 @@ class RoleListCreateView(APIView):
             message="Roles retrieved successfully.", data=serializer.data
         )
 
+    @method_decorator(
+        ratelimit(key="ip", rate="5/m", block=True)  # 5 requests per minute per IP
+    )   
     @schemas.role_create_schema
     def post(self, request):
         serializer = role_serializer.RoleSerializer(
@@ -63,6 +72,9 @@ class RoleUpdateDestroyView(APIView):
         self.required_permission = self.method_permissions.get(self.request.method)
         return super().get_permissions()
 
+    @method_decorator(
+        ratelimit(key="ip", rate="5/m", block=True)  # 5 requests per minute per IP
+    )   
     @schemas.role_update_schema
     def put(self, request, role_id):
         serializer = role_serializer.RoleSerializer(
@@ -78,6 +90,9 @@ class RoleUpdateDestroyView(APIView):
         except ValueError as e:
             return api_response(message=str(e), status_code=status.HTTP_409_CONFLICT)
 
+    @method_decorator(
+        ratelimit(key="ip", rate="5/m", block=True)  # 5 requests per minute per IP
+    )   
     @schemas.role_delete_schema
     def delete(self, request, role_id):
         try:
@@ -100,6 +115,9 @@ class PermissionListCreateView(APIView):
         self.required_permission = self.method_permissions.get(self.request.method)
         return super().get_permissions()
 
+    @method_decorator(
+        ratelimit(key="ip", rate="5/m", block=True)  # 5 requests per minute per IP
+    )   
     @schemas.permission_list_schema
     def get(self, request):
         permissions = list_permissions()
@@ -108,6 +126,9 @@ class PermissionListCreateView(APIView):
             message="Permissions retrieved successfully.", data=serializer.data
         )
 
+    @method_decorator(
+        ratelimit(key="ip", rate="5/m", block=True)  # 5 requests per minute per IP
+    )   
     @schemas.permission_create_schema
     def post(self, request):
         serializer = role_serializer.PermissionSerializer(
@@ -141,6 +162,9 @@ class PermissionUpdateDestroyView(APIView):
         self.required_permission = self.method_permissions.get(self.request.method)
         return super().get_permissions()
 
+    @method_decorator(
+        ratelimit(key="ip", rate="5/m", block=True)  # 5 requests per minute per IP
+    )   
     @schemas.permission_update_schema
     def put(self, request, permission_id):
         serializer = role_serializer.PermissionSerializer(
@@ -158,6 +182,9 @@ class PermissionUpdateDestroyView(APIView):
         except ValueError as e:
             return api_response(message=str(e), status_code=status.HTTP_409_CONFLICT)
 
+    @method_decorator(
+        ratelimit(key="ip", rate="5/m", block=True)  # 5 requests per minute per IP
+    )   
     @schemas.permission_delete_schema
     def delete(self, request, permission_id):
         try:
@@ -171,6 +198,9 @@ class RolePermissionAssignView(APIView):
     permission_classes = [IsAuthenticated, HasPermission]
     required_permission = constants.ASSIGN_PERMISSION
 
+    @method_decorator(
+        ratelimit(key="ip", rate="5/m", block=True)  # 5 requests per minute per IP
+    )   
     @schemas.role_permission_assign_schema
     def post(self, request):
         serializer = role_serializer.RolePermissionAssignSerializer(
@@ -196,6 +226,9 @@ class UserRoleAssignView(APIView):
     permission_classes = [IsAuthenticated, HasPermission]
     required_permission = constants.ASSIGN_ROLE
 
+    @method_decorator(
+        ratelimit(key="ip", rate="5/m", block=True)  # 5 requests per minute per IP
+    )   
     @schemas.user_role_assign_schema
     def post(self, request):
         serializer = role_serializer.UserRoleAssignSerializer(
@@ -219,6 +252,9 @@ class PermissionUnassignView(APIView):
     permission_classes = [IsAuthenticated, HasPermission]
     required_permission = constants.UNASSIGN_PERMISSION
 
+    @method_decorator(
+        ratelimit(key="ip", rate="5/m", block=True)  # 5 requests per minute per IP
+    )   
     @schemas.permission_unassign_schema
     def post(self, request):
         serializer = role_serializer.RolePermissionAssignSerializer(
@@ -244,6 +280,9 @@ class RoleUnassignView(APIView):
     permission_classes = [IsAuthenticated, HasPermission]
     required_permission = constants.UNASSIGN_ROLE
 
+    @method_decorator(
+        ratelimit(key="ip", rate="5/m", block=True)  # 5 requests per minute per IP
+    )   
     @schemas.role_unassign_schema
     def post(self, request):
         serializer = role_serializer.UserRoleAssignSerializer(

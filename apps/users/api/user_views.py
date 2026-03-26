@@ -2,6 +2,9 @@ from rest_framework import status
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.views import APIView
 
+from django.utils.decorators import method_decorator
+from django_ratelimit.decorators import ratelimit
+
 from apps.generics.permissions import HasPermission, IsAuthenticated
 from apps.generics.responses import api_response
 from apps.users import constants
@@ -25,6 +28,9 @@ class UserListCreateView(APIView):
         self.required_permission = self.method_permissions.get(self.request.method)
         return super().get_permissions()
 
+    @method_decorator(
+        ratelimit(key="ip", rate="5/m", block=True)  # 5 requests per minute per IP
+    )   
     @schemas.user_list_schema
     def get(self, request):
         users = UserService.list_users()
@@ -34,6 +40,9 @@ class UserListCreateView(APIView):
         serializer = user_serializer.UserListSerializer(paginated_users, many=True)
         return paginator.get_paginated_response(serializer.data)
 
+    @method_decorator(
+        ratelimit(key="ip", rate="5/m", block=True)  # 5 requests per minute per IP
+    )   
     @schemas.user_create_schema
     def post(self, request):
         serializer = user_serializer.UserCreateSerializer(data=request.data)
@@ -66,6 +75,9 @@ class UserRetrieveUpdateDeleteView(APIView):
         self.required_permission = self.method_permissions.get(self.request.method)
         return super().get_permissions()
 
+    @method_decorator(
+        ratelimit(key="ip", rate="5/m", block=True)  # 5 requests per minute per IP
+    )   
     @schemas.user_retrieve_schema
     def get(self, request, user_id):
         user = get_user(user_id)
@@ -78,6 +90,9 @@ class UserRetrieveUpdateDeleteView(APIView):
             message="User retrieved successfully.", data=serializer.data
         )
 
+    @method_decorator(
+        ratelimit(key="ip", rate="5/m", block=True)  # 5 requests per minute per IP
+    )   
     @schemas.user_update_schema
     def put(self, request, user_id):
         serializer = user_serializer.UserUpdateSerializer(data=request.data)
@@ -90,6 +105,9 @@ class UserRetrieveUpdateDeleteView(APIView):
         serializer = user_serializer.UserListSerializer(user)
         return api_response(message="User updated successfully.", data=serializer.data)
 
+    @method_decorator(
+        ratelimit(key="ip", rate="5/m", block=True)  # 5 requests per minute per IP
+    )   
     @schemas.user_delete_schema
     def delete(self, request, user_id):
         user = UserService.delete_user(user_id)

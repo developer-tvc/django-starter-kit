@@ -104,6 +104,7 @@ DATABASES = {
         "PASSWORD": utils.get_env_variable("PSQL_PASSWORD"),
         "HOST": utils.get_env_variable("PSQL_HOST"),
         "PORT": utils.get_env_variable("PSQL_PORT"),
+        "CONN_MAX_AGE": 60,  # Keep connections open for 60 seconds
     }
 }
 

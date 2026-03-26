@@ -55,6 +55,9 @@ class CustomTokenBlacklistView(TokenBlacklistView):
 
 
 class PasswordResetRequestView(APIView):
+    @method_decorator(
+        ratelimit(key="ip", rate="5/m", block=True)  # 5 requests per minute per IP
+    )
     @password_reset_request_schema
     def post(self, request):
         serializer = PasswordResetRequestSerializer(data=request.data)
@@ -69,6 +72,9 @@ class PasswordResetRequestView(APIView):
 
 
 class PasswordResetConfirmView(APIView):
+    @method_decorator(
+        ratelimit(key="ip", rate="5/m", block=True)  # 5 requests per minute per IP
+    )
     @password_reset_confirm_schema
     def post(self, request):
         serializer = PasswordResetConfirmSerializer(data=request.data)
@@ -85,6 +91,9 @@ class PasswordResetConfirmView(APIView):
 
 
 class LogoutView(APIView):
+    @method_decorator(
+        ratelimit(key="ip", rate="5/m", block=True)  # 5 requests per minute per IP
+    )
     @logout_schema
     def post(self, request):
         refresh_token = request.data.get("refresh")
@@ -120,6 +129,9 @@ class LogoutView(APIView):
 
 
 class EmailVerificationView(APIView):
+    @method_decorator(
+        ratelimit(key="ip", rate="5/m", block=True)  # 5 requests per minute per IP
+    )
     @email_verification_schema
     def post(self, request):
         serializer = EmailVerificationSerializer(data=request.data)
