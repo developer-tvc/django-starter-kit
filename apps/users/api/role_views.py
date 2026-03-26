@@ -1,5 +1,4 @@
 from rest_framework import status
-from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from apps.generics.permissions import HasPermission, IsAuthenticated
@@ -82,7 +81,7 @@ class RoleUpdateDestroyView(APIView):
     @schemas.role_delete_schema
     def delete(self, request, role_id):
         try:
-            role = RoleService.delete_role(role_id)
+            RoleService.delete_role(role_id)
             return api_response(message="Role deleted successfully.")
         except ValueError as e:
             return api_response(message=str(e), status_code=status.HTTP_409_CONFLICT)
@@ -162,7 +161,7 @@ class PermissionUpdateDestroyView(APIView):
     @schemas.permission_delete_schema
     def delete(self, request, permission_id):
         try:
-            permission = RoleService.delete_permission(permission_id)
+            RoleService.delete_permission(permission_id)
             return api_response(message="Permission deleted successfully.")
         except ValueError as e:
             return api_response(message=str(e), status_code=status.HTTP_409_CONFLICT)
@@ -252,7 +251,7 @@ class RoleUnassignView(APIView):
         )  # Validate the data
         serializer.is_valid(raise_exception=True)
         try:
-            user = RoleService.unassign_roles_from_user(
+            RoleService.unassign_roles_from_user(
                 serializer.validated_data["user_id"],
                 serializer.validated_data["role_ids"],
             )

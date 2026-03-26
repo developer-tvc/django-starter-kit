@@ -9,7 +9,7 @@ class IsNonAdminUser(BasePermission):
     """
 
     def has_permission(self, request, view):
-        if not is_authenticated(self, request, view):
+        if not IsAuthenticated.has_permission(self, request, view):
             return False
 
         return bool(request.user and not request.user.is_staff)

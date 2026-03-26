@@ -6,4 +6,5 @@ class WebhookService:
         requests.post(
             "https://example.com/webhook",
             json={"user_id": user.id, "message": message},
+            timeout=5,  # or (connect, read) -> (3, 5)
         )

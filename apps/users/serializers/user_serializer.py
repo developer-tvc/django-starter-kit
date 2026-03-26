@@ -1,7 +1,6 @@
 from rest_framework import serializers
 
 from apps.users.models import Role, User
-from apps.users.selectors.role_selectors import get_role_by_name
 
 
 class RoleSerializer(serializers.ModelSerializer):

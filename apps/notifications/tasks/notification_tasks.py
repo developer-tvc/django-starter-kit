@@ -1,7 +1,6 @@
 from celery import shared_task
 from django.utils import timezone
 
-from apps.notifications.models import NotificationLog
 from apps.notifications.services.notification_service import \
     NotificationService
 

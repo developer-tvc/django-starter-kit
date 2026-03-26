@@ -1,5 +1,5 @@
 from apps.notifications.tasks.notification_tasks import send_notification_task
-from apps.users.models import Role, User
+from apps.users.models import User
 from apps.users.selectors.user_selectors import get_user, list_users
 
 

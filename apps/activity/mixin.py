@@ -7,7 +7,6 @@ from django.db import models
 from apps.activity import constants
 from apps.activity.models import ActivityLog
 from apps.activity.utils import get_diff, serialize_instance
-from apps.generics.middleware.current_user_middleware import get_current_user
 
 
 class ActivityMixin(models.Model):
@@ -64,8 +63,6 @@ class ActivityMixin(models.Model):
                     or value == []
                     or value == {}
                 )
-
-            new_keys = list(diff["new"].keys())
 
             for field in diff["new"].keys():
                 old = diff["old"].get(field)

@@ -121,9 +121,9 @@ class RoleService:
             raise ValueError("User Role already exists")
 
         for user_role in user_roles:
-            UserRole.objects.create(user=user, role=role)
+            UserRole.objects.create(user=user_id, role=user_role.role)
 
-        return user
+        return user_roles
 
     @staticmethod  # Static service method to avoid unnecessary class instantiation
     @transaction.atomic
