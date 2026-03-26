@@ -8,10 +8,12 @@ from apps.users.api import schemas
 from apps.users.selectors.user_selectors import get_user
 from apps.users.serializers import user_serializer
 from apps.users.services.user_service import UserService
+from rest_framework.pagination import LimitOffsetPagination
 
 
 class UserListCreateView(APIView):
     permission_classes = [HasPermission, IsAuthenticated]
+    pagination_class = LimitOffsetPagination
     # Define permissions for each method
     method_permissions = {
         "GET": constants.USER_VIEW,
@@ -26,10 +28,11 @@ class UserListCreateView(APIView):
     @schemas.user_list_schema
     def get(self, request):
         users = UserService.list_users()
-        serializer = user_serializer.UserListSerializer(users, many=True)
-        return api_response(
-            message="Users retrieved successfully.", data=serializer.data
-        )
+        sorted_users = users.order_by("-date_joined")
+        paginator = self.pagination_class()
+        paginated_users = paginator.paginate_queryset(sorted_users, request)
+        serializer = user_serializer.UserListSerializer(paginated_users, many=True)
+        return paginator.get_paginated_response(serializer.data)
 
     @schemas.user_create_schema
     def post(self, request):

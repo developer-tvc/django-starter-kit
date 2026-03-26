@@ -3,6 +3,16 @@ from django.urls import path
 from apps.users.api import auth_views, profile_views, role_views, user_views
 
 urlpatterns = [
+    path("", user_views.UserListCreateView.as_view(), name="user-list-create"),
+    path(
+        "<int:user_id>/",
+        user_views.UserRetrieveUpdateDeleteView.as_view(),
+        name="user-detail",
+    ),
+    path("profile/", profile_views.ProfileView.as_view(), name="profile"),
+    path(
+        "verify-email/", auth_views.EmailVerificationView.as_view(), name="verify-email"
+    ),
     path("login/", auth_views.LoginView.as_view(), name="login"),
     path("refresh/", auth_views.CustomTokenRefreshView.as_view(), name="token_refresh"),
     path(
@@ -53,14 +63,5 @@ urlpatterns = [
         name="password_reset_confirm",
     ),
     path("logout/", auth_views.LogoutView.as_view(), name="logout"),
-    path("", user_views.UserListCreateView.as_view(), name="user-list-create"),
-    path(
-        "<int:user_id>/",
-        user_views.UserRetrieveUpdateDeleteView.as_view(),
-        name="user-detail",
-    ),
-    path("profile/", profile_views.ProfileView.as_view(), name="profile"),
-    path(
-        "verify-email/", auth_views.EmailVerificationView.as_view(), name="verify-email"
-    ),
+    
 ]
