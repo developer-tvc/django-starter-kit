@@ -1,6 +1,6 @@
 import os
-from dotenv import load_dotenv
 
+from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -8,11 +8,9 @@ load_dotenv()
 def get_env_variable(var_name: str) -> str:
     """Utility function to get an environment variable or raise a ValueError"""
     value = os.getenv(var_name)
-    print(value,"-------------------")
     if value is None:
         raise ValueError(f"{var_name} Environment variable not set")
     return value
-
 
 
 def validate_file_path(file_path):

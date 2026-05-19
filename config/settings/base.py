@@ -9,70 +9,89 @@ https://docs.djangoproject.com/en/6.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
+
+import json
 import os
+import sys
+from datetime import timedelta
 from pathlib import Path
+
 from config import utils
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('SECRET_KEY')
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG', 'false').strip().lower() == 'true'
-ENVIRONMENT = utils.get_env_variable('ENV')
+DEBUG = os.getenv("DEBUG", "false").strip().lower() == "true"
+ENVIRONMENT = utils.get_env_variable("ENV")
 
 ALLOWED_HOSTS = []
 
 
 # Application definition
-
-INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'apps.users',
-    'rest_framework',
-    'rest_framework_simplejwt.token_blacklist',
-    'drf_spectacular',
+DJANGO_APPS = [
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
 ]
+
+THIRD_PARTY_APPS = [
+    "corsheaders",
+    "rest_framework",
+    "rest_framework_simplejwt.token_blacklist",
+    "drf_spectacular",
+    "csp",
+]
+
+LOCAL_APPS = ["apps.users", "apps.notifications", "apps.activity", "apps.monitoring"]
+
+INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.security.SecurityMiddleware",
+    "apps.generics.middleware.ip_whitelist_middleware.IPWhitelistMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "apps.generics.middleware.current_user_middleware.CurrentUserMiddleware",
+    "apps.generics.middleware.correlation_id_middleware.CorrelationIdMiddleware",
+    "apps.generics.middleware.exception_handler.GlobalExceptionMiddleware",
+    "csp.middleware.CSPMiddleware",
+    "apps.generics.middleware.device_middleware.DeviceMiddleware",
 ]
 
-ROOT_URLCONF = 'config.urls'
+ROOT_URLCONF = "config.urls"
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'config.wsgi.application'
+WSGI_APPLICATION = "config.wsgi.application"
 
 
 # Database
@@ -85,53 +104,52 @@ DATABASES = {
         "PASSWORD": utils.get_env_variable("PSQL_PASSWORD"),
         "HOST": utils.get_env_variable("PSQL_HOST"),
         "PORT": utils.get_env_variable("PSQL_PORT"),
+        "CONN_MAX_AGE": 60,  # Keep connections open for 60 seconds
     }
 }
 
-SSL_PATH = os.getenv('SSL_PATH')
+SSL_PATH = os.getenv("SSL_PATH")
 # Validate SSL path if it is set
 if SSL_PATH:
     utils.validate_file_path(SSL_PATH)
 # Conditionally add SSL options if the path is provided and valid
 if SSL_PATH and os.path.exists(SSL_PATH):
-    ssl_options = {
-        'ssl': {
-            'ca': SSL_PATH
-        },
-        'charset': 'utf8mb4'
-    }
+    ssl_options = {"ssl": {"ca": SSL_PATH}, "charset": "utf8mb4"}
 
-    DATABASES['default']['OPTIONS'] = ssl_options
+    DATABASES["default"]["OPTIONS"] = ssl_options
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
 
 
 REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
     ],
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.BasicAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.BasicAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
     ],
-    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema'
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "EXCEPTION_HANDLER": "apps.generics.exceptions.custom_exception_handler",
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
+    "PAGE_SIZE": 6,
 }
 
 SPECTACULAR_SETTINGS = {
@@ -140,14 +158,14 @@ SPECTACULAR_SETTINGS = {
     "VERSION": "1.0.0",
 }
 
-AUTH_USER_MODEL = 'apps.users.models.User'
+AUTH_USER_MODEL = "users.User"
 
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = "UTC"
 
 USE_I18N = True
 
@@ -157,4 +175,152 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = "/static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
+
+
+# Default primary key field type
+# https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
+# CORS Configurations
+CORS_ALLOW_ALL_ORIGINS = False
+CORS_ALLOWED_ORIGINS = json.loads(os.getenv("CORS_ALLOWED_ORIGINS", "[]"))
+CSRF_TRUSTED_ORIGINS = json.loads(os.getenv("CSRF_TRUSTED_ORIGINS", "[]"))
+CORS_EXPOSE_HEADERS = [
+    "Content-Disposition",
+    "X-Report-Empty",
+    "X-Report-Context",
+    "X-Report-Count",
+]
+
+
+# Django-REST-Framework simplejwt configurations
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+    "ROTATE_REFRESH_TOKENS": True,  # If True, a new refresh token is issued when the refresh token is used
+    "BLACKLIST_AFTER_ROTATION": True,  # If True, the old refresh token is blacklisted when the refresh token is used
+    "AUTH_HEADER_TYPES": ("Bearer",),
+    "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
+}
+
+
+# Email configurations
+EMAIL_BACKEND = os.getenv("EMAIL_BACKEND")
+EMAIL_HOST = os.getenv("EMAIL_HOST")
+EMAIL_PORT = int(os.getenv("EMAIL_PORT", 587))
+EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS") == "True"
+
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
+
+
+CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", "redis://localhost:6379/0")
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
+
+EMAIL_VERIFICATION_ENABLED = os.getenv("EMAIL_VERIFICATION_ENABLED")
+
+LOGIN_MAX_ATTEMPTS = os.getenv("LOGIN_MAX_ATTEMPTS")
+LOGIN_LOCK_ENABLED = os.getenv("LOGIN_LOCK_ENABLED")
+LOGIN_LOCK_MINUTES = os.getenv("LOGIN_LOCK_MINUTES")
+
+
+EMAIL_ENABLED = os.getenv("EMAIL_ENABLED")
+SMS_ENABLED = os.getenv("SMS_ENABLED")
+IN_APP_ENABLED = os.getenv("IN_APP_ENABLED")
+WEBHOOK_ENABLED = os.getenv("WEBHOOK_ENABLED")
+
+
+LOG_DIR = os.path.join(BASE_DIR, "logs")
+os.makedirs(LOG_DIR, exist_ok=True)
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "json": {
+            "()": "apps.generics.utils.json_formatter.CustomJSONFormatter",
+        },
+    },
+    "filters": {
+        "correlation_id": {
+            "()": "apps.generics.utils.logging_filters.CorrelationIdFilter",
+        },
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "json",
+            "filters": ["correlation_id"],
+        },
+        "file": {
+            "class": "logging.FileHandler",
+            "formatter": "json",
+            "filename": os.path.join(LOG_DIR, "app.log"),
+            "filters": ["correlation_id"],
+        },
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console", "file"],
+            "level": "INFO",
+            "propagate": True,
+        },
+        "apps": {
+            "handlers": ["console", "file"],
+            "level": "INFO",
+            "propagate": False,
+        },
+    },
+}
+
+# HTTPS
+SECURE_SSL_REDIRECT = not DEBUG
+
+# HSTS
+SECURE_HSTS_SECONDS = int(os.getenv("SECURE_HSTS_SECONDS", 0))
+SECURE_HSTS_INCLUDE_SUBDOMAINS = not DEBUG
+SECURE_HSTS_PRELOAD = not DEBUG
+
+# Cookies
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = not DEBUG
+SESSION_COOKIE_HTTPONLY = True
+CSRF_COOKIE_HTTPONLY = True
+
+# Sessions
+SESSION_COOKIE_AGE = 3600
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+# Security headers
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = "DENY"
+SECURE_REFERRER_POLICY = "same-origin"
+
+# Content Security Policy (CSP)
+CONTENT_SECURITY_POLICY = {
+    "DIRECTIVES": {
+        "default-src": ("'self'",),
+        "img-src": ("'self'", "data:", "https:"),
+        "script-src": (
+            "'self'",
+            "'unsafe-inline'",  # required for swagger
+            "'unsafe-eval'",  # required for swagger
+            "https:",
+        ),
+        "style-src": (
+            "'self'",
+            "'unsafe-inline'",  # required for swagger UI styles
+            "https:",
+        ),
+    }
+}
+
+
+IP_WHITELIST = json.loads(os.getenv("IP_WHITELIST", "[]"))
