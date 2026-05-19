@@ -27,7 +27,7 @@ dependencies = [
     "uritemplate (==4.2.0)",
     "celery (>=5.6.2,<6.0.0)",
     "redis (>=7.3.0,<8.0.0)",
-    "black (>=26.3.1,<27.0.0)",
+    "black (>=25.1.0,<26.0.0)",
     "django-ratelimit (>=4.1.0,<5.0.0)",
     "django-csp (>=4.0,<5.0)",
     "django-cors-headers (>=4.9.0,<5.0.0)",
@@ -40,6 +40,10 @@ dependencies = [
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 88
+target-version = ["py312"]
 
 [dependency-groups]
 dev = [

@@ -26,10 +26,10 @@ jobs:
           cache: pip
 
       - name: Install lint dependencies
-        run: pip install flake8 black isort
+        run: pip install flake8 "black<26" isort
 
       - name: black (format check)
-        run: black --check .
+        run: black --check --target-version py312 .
 
       - name: isort (import order check)
         run: isort --check-only --diff .
