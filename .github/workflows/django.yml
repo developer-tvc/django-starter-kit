@@ -52,13 +52,13 @@ jobs:
           cache: pip
 
       - name: Install security tools
-        run: pip install bandit safety
+        run: pip install bandit "safety<3"
 
       - name: bandit (static security analysis)
         run: bandit -r . -x ./tests,./venv --severity-level medium
 
       - name: safety (dependency vulnerability check)
-        run: safety check --full-report
+        run: safety check -r requirements.txt --full-report
         # To ignore specific CVEs: safety check --ignore=12345
 
   # ── 3. Tests ─────────────────────────────────────────────────────────────────

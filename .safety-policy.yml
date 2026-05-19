@@ -1,0 +1,13 @@
+# Safety policy for the legacy `safety check` command (Safety 2.x format).
+security:
+  # Report all vulnerabilities by default.
+  ignore-cvss-severity-below: 0
+
+  # Include vulnerabilities that do not yet have a CVSS score.
+  ignore-cvss-unknown-severity: false
+
+  # Add ignored vulnerability IDs here when needed.
+  ignore-vulnerabilities: {}
+
+  # Fail CI when vulnerabilities are found.
+  continue-on-vulnerability-error: false
