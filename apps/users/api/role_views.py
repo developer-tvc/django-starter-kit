@@ -29,7 +29,7 @@ class RoleListCreateView(APIView):
 
     @method_decorator(
         ratelimit(key="ip", rate="5/m", block=True)  # 5 requests per minute per IP
-    )   
+    )
     @schemas.role_list_schema
     def get(self, request):
         roles = list_roles()
@@ -40,7 +40,7 @@ class RoleListCreateView(APIView):
 
     @method_decorator(
         ratelimit(key="ip", rate="5/m", block=True)  # 5 requests per minute per IP
-    )   
+    )
     @schemas.role_create_schema
     def post(self, request):
         serializer = role_serializer.RoleSerializer(
@@ -74,7 +74,7 @@ class RoleUpdateDestroyView(APIView):
 
     @method_decorator(
         ratelimit(key="ip", rate="5/m", block=True)  # 5 requests per minute per IP
-    )   
+    )
     @schemas.role_update_schema
     def put(self, request, role_id):
         serializer = role_serializer.RoleSerializer(
@@ -92,7 +92,7 @@ class RoleUpdateDestroyView(APIView):
 
     @method_decorator(
         ratelimit(key="ip", rate="5/m", block=True)  # 5 requests per minute per IP
-    )   
+    )
     @schemas.role_delete_schema
     def delete(self, request, role_id):
         try:
@@ -117,7 +117,7 @@ class PermissionListCreateView(APIView):
 
     @method_decorator(
         ratelimit(key="ip", rate="5/m", block=True)  # 5 requests per minute per IP
-    )   
+    )
     @schemas.permission_list_schema
     def get(self, request):
         permissions = list_permissions()
@@ -128,7 +128,7 @@ class PermissionListCreateView(APIView):
 
     @method_decorator(
         ratelimit(key="ip", rate="5/m", block=True)  # 5 requests per minute per IP
-    )   
+    )
     @schemas.permission_create_schema
     def post(self, request):
         serializer = role_serializer.PermissionSerializer(
@@ -164,7 +164,7 @@ class PermissionUpdateDestroyView(APIView):
 
     @method_decorator(
         ratelimit(key="ip", rate="5/m", block=True)  # 5 requests per minute per IP
-    )   
+    )
     @schemas.permission_update_schema
     def put(self, request, permission_id):
         serializer = role_serializer.PermissionSerializer(
@@ -184,7 +184,7 @@ class PermissionUpdateDestroyView(APIView):
 
     @method_decorator(
         ratelimit(key="ip", rate="5/m", block=True)  # 5 requests per minute per IP
-    )   
+    )
     @schemas.permission_delete_schema
     def delete(self, request, permission_id):
         try:
@@ -200,7 +200,7 @@ class RolePermissionAssignView(APIView):
 
     @method_decorator(
         ratelimit(key="ip", rate="5/m", block=True)  # 5 requests per minute per IP
-    )   
+    )
     @schemas.role_permission_assign_schema
     def post(self, request):
         serializer = role_serializer.RolePermissionAssignSerializer(
@@ -228,7 +228,7 @@ class UserRoleAssignView(APIView):
 
     @method_decorator(
         ratelimit(key="ip", rate="5/m", block=True)  # 5 requests per minute per IP
-    )   
+    )
     @schemas.user_role_assign_schema
     def post(self, request):
         serializer = role_serializer.UserRoleAssignSerializer(
@@ -254,7 +254,7 @@ class PermissionUnassignView(APIView):
 
     @method_decorator(
         ratelimit(key="ip", rate="5/m", block=True)  # 5 requests per minute per IP
-    )   
+    )
     @schemas.permission_unassign_schema
     def post(self, request):
         serializer = role_serializer.RolePermissionAssignSerializer(
@@ -282,7 +282,7 @@ class RoleUnassignView(APIView):
 
     @method_decorator(
         ratelimit(key="ip", rate="5/m", block=True)  # 5 requests per minute per IP
-    )   
+    )
     @schemas.role_unassign_schema
     def post(self, request):
         serializer = role_serializer.UserRoleAssignSerializer(

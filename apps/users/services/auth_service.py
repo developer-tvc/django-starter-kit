@@ -7,8 +7,10 @@ from rest_framework.exceptions import AuthenticationFailed
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from apps.activity.services.device_track import track_device
-from apps.generics.utils.token_utils import (create_password_reset_token,
-                                             decode_password_reset_token)
+from apps.generics.utils.token_utils import (
+    create_password_reset_token,
+    decode_password_reset_token,
+)
 from apps.notifications.services.email_service import EmailService
 from apps.users.selectors.auth_selectors import get_client_ip
 from apps.users.selectors.user_selectors import get_user_by_username
@@ -17,7 +19,6 @@ User = get_user_model()
 
 
 class AuthService:
-
     @staticmethod
     def login(username: str, password: str, request):
         user = authenticate(username=username, password=password)

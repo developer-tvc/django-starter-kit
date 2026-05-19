@@ -1,7 +1,10 @@
 from django.utils import timezone
 
-from apps.notifications.constants import (IN_APP_ENABLED, SMS_ENABLED,
-                                          WEBHOOK_ENABLED)
+from apps.notifications.constants import (
+    IN_APP_ENABLED,
+    SMS_ENABLED,
+    WEBHOOK_ENABLED,
+)
 from apps.notifications.models import NotificationLog
 from apps.notifications.services.in_app_service import InAppService
 from apps.notifications.services.sms_service import SMSService
@@ -9,7 +12,6 @@ from apps.notifications.services.webhook_service import WebhookService
 
 
 class NotificationService:
-
     def __init__(self):
         self.sms_service = SMSService()
         self.in_app_service = InAppService()

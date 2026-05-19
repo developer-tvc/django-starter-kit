@@ -15,7 +15,7 @@ class ProfileView(APIView):
 
     @method_decorator(
         ratelimit(key="ip", rate="5/m", block=True)  # 5 requests per minute per IP
-    )   
+    )
     @schemas.profile_view_schema
     def get(self, request):
         user = ProfileService.get_profile(request.user)
@@ -26,7 +26,7 @@ class ProfileView(APIView):
 
     @method_decorator(
         ratelimit(key="ip", rate="5/m", block=True)  # 5 requests per minute per IP
-    )   
+    )
     @schemas.profile_update_schema
     def patch(self, request):
         serializer = profile_serializer.ProfileUpdateSerializer(data=request.data)

@@ -30,7 +30,7 @@ class UserListCreateView(APIView):
 
     @method_decorator(
         ratelimit(key="ip", rate="5/m", block=True)  # 5 requests per minute per IP
-    )   
+    )
     @schemas.user_list_schema
     def get(self, request):
         users = UserService.list_users()
@@ -42,7 +42,7 @@ class UserListCreateView(APIView):
 
     @method_decorator(
         ratelimit(key="ip", rate="5/m", block=True)  # 5 requests per minute per IP
-    )   
+    )
     @schemas.user_create_schema
     def post(self, request):
         serializer = user_serializer.UserCreateSerializer(data=request.data)
@@ -77,7 +77,7 @@ class UserRetrieveUpdateDeleteView(APIView):
 
     @method_decorator(
         ratelimit(key="ip", rate="5/m", block=True)  # 5 requests per minute per IP
-    )   
+    )
     @schemas.user_retrieve_schema
     def get(self, request, user_id):
         user = get_user(user_id)
@@ -92,7 +92,7 @@ class UserRetrieveUpdateDeleteView(APIView):
 
     @method_decorator(
         ratelimit(key="ip", rate="5/m", block=True)  # 5 requests per minute per IP
-    )   
+    )
     @schemas.user_update_schema
     def put(self, request, user_id):
         serializer = user_serializer.UserUpdateSerializer(data=request.data)
@@ -107,7 +107,7 @@ class UserRetrieveUpdateDeleteView(APIView):
 
     @method_decorator(
         ratelimit(key="ip", rate="5/m", block=True)  # 5 requests per minute per IP
-    )   
+    )
     @schemas.user_delete_schema
     def delete(self, request, user_id):
         user = UserService.delete_user(user_id)

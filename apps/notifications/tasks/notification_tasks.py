@@ -1,8 +1,7 @@
 from celery import shared_task
 from django.utils import timezone
 
-from apps.notifications.services.notification_service import \
-    NotificationService
+from apps.notifications.services.notification_service import NotificationService
 
 
 @shared_task(bind=True, max_retries=3)
