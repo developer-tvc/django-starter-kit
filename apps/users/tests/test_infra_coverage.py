@@ -47,8 +47,7 @@ class FailingCursor(SuccessfulCursor):
 
 
 AUTHENTICATE_PATH = (
-    "apps.generics.middleware.current_user_middleware."
-    "JWTAuthentication.authenticate"
+    "apps.generics.middleware.current_user_middleware." "JWTAuthentication.authenticate"
 )
 
 
@@ -122,9 +121,7 @@ def test_device_and_ip_whitelist_middleware(monkeypatch):
         deny_request = factory.get("/secure", REMOTE_ADDR="10.10.10.10")
         denied = IPWhitelistMiddleware(lambda req: HttpResponse("ok"))(deny_request)
         assert denied.status_code == 403
-        assert json.loads(denied.content) == {
-            "detail": "Access denied: IP not allowed"
-        }
+        assert json.loads(denied.content) == {"detail": "Access denied: IP not allowed"}
 
 
 @pytest.mark.django_db
@@ -221,9 +218,7 @@ def test_correlation_middleware_and_logging_filter(monkeypatch):
         "apps.generics.middleware.correlation_id_middleware.get_current_correlation_id",
         lambda: "corr-id",
     )
-    record = logging.LogRecord(
-        "apps", logging.INFO, __file__, 1, "message", (), None
-    )
+    record = logging.LogRecord("apps", logging.INFO, __file__, 1, "message", (), None)
     assert CorrelationIdFilter().filter(record) is True
     assert record.user_id == 99
     assert record.correlation_id == "corr-id"
