@@ -103,6 +103,9 @@ class PasswordResetConfirmView(APIView):
 
 
 class LogoutView(APIView):
+    authentication_classes = []
+    permission_classes = []
+
     @method_decorator(
         ratelimit(key="ip", rate="5/m", block=True)  # 5 requests per minute per IP
     )
