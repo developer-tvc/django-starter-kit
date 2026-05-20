@@ -25,7 +25,10 @@ class UserService:
         send_notification_task.delay(
             [user.id],  # Change as per requirement (list of user ids)
             "New User Registered",
-            f"{user.first_name} {user.last_name} created by {request.user.first_name} {request.user.last_name}",
+            (
+                f"{user.first_name} {user.last_name} created by "
+                f"{request.user.first_name} {request.user.last_name}"
+            ),
             ["in_app"],
         )
         return user

@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 
 import json
 import os
-import sys
 from datetime import timedelta
 from pathlib import Path
 
@@ -123,7 +122,10 @@ if SSL_PATH and os.path.exists(SSL_PATH):
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+        "NAME": (
+            "django.contrib.auth.password_validation."
+            "UserAttributeSimilarityValidator"
+        ),
     },
     {
         "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
@@ -203,8 +205,10 @@ CORS_EXPOSE_HEADERS = [
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
-    "ROTATE_REFRESH_TOKENS": True,  # If True, a new refresh token is issued when the refresh token is used
-    "BLACKLIST_AFTER_ROTATION": True,  # If True, the old refresh token is blacklisted when the refresh token is used
+    "ROTATE_REFRESH_TOKENS": True,
+    # If True, a new refresh token is issued when the refresh token is used.
+    "BLACKLIST_AFTER_ROTATION": True,
+    # If True, the old refresh token is blacklisted when the refresh token is used.
     "AUTH_HEADER_TYPES": ("Bearer",),
     "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
 }

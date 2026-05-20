@@ -235,7 +235,7 @@ class UserRoleAssignView(APIView):
         )  # Validate the data
         serializer.is_valid(raise_exception=True)
         try:
-            user = RoleService.assign_roles_to_user(
+            RoleService.assign_roles_to_user(
                 serializer.validated_data["user_id"],
                 serializer.validated_data["role_ids"],
             )

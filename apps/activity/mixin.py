@@ -74,7 +74,10 @@ class ActivityMixin(models.Model):
                 elif old != new:
                     changes.append(f"changed {field} from {old} → {new}")
 
-            description = f"{action} by {user.first_name} {user.last_name}. Changes: {'; '.join(changes)}"
+            description = (
+                f"{action} by {user.first_name} {user.last_name}. "
+                f"Changes: {'; '.join(changes)}"
+            )
 
             ActivityLog.objects.create(
                 user=user,

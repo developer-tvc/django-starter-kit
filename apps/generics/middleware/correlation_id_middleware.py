@@ -46,7 +46,7 @@ class CorrelationIdMiddleware:
 
         try:
             response = self.get_response(request)
-        except Exception as e:
+        except Exception:
             logger.exception(
                 "unhandled_exception",
                 extra={

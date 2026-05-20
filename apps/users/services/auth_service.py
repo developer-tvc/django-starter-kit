@@ -37,7 +37,8 @@ class AuthService:
                 remaining_minutes = remaining_seconds // 60
                 remaining_seconds = remaining_seconds % 60
                 raise AuthenticationFailed(
-                    f"Account locked. Try again in {remaining_minutes}m {remaining_seconds}s"
+                    "Account locked. "
+                    f"Try again in {remaining_minutes}m {remaining_seconds}s"
                 )
 
             # If lock time expired → reset lock
@@ -67,7 +68,7 @@ class AuthService:
             )
 
         if not user:
-            # Password check (already done via authenticate, but you can add manual check if needed)
+            # Password check (already done via authenticate, but kept here if needed)
             if not get_user.check_password(password):
                 if settings.LOGIN_LOCK_ENABLED == "True":
                     get_user.failed_login_attempts += 1
