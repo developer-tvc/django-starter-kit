@@ -167,13 +167,13 @@ jobs:
       - name: Django check (system checks framework)
         env:
           DATABASE_URL: ${{ env.DATABASE_URL }}
-          DJANGO_SETTINGS_MODULE: config.settings.test
-          SECRET_KEY: ci-secret-key-not-for-production
+          DJANGO_SETTINGS_MODULE: config.settings.ci
+          SECRET_KEY: ci-only-secret-key-for-deploy-checks-please-replace-with-a-real-secret-key
         run: python manage.py check --deploy --fail-level WARNING
 
       - name: Check for missing migrations
         env:
           DATABASE_URL: ${{ env.DATABASE_URL }}
-          DJANGO_SETTINGS_MODULE: config.settings.test
-          SECRET_KEY: ci-secret-key-not-for-production
+          DJANGO_SETTINGS_MODULE: config.settings.ci
+          SECRET_KEY: ci-only-secret-key-for-deploy-checks-please-replace-with-a-real-secret-key
         run: python manage.py makemigrations --check --dry-run

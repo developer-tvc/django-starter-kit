@@ -37,7 +37,11 @@ class UserListCreateView(APIView):
         paginator = self.pagination_class()
         paginated_users = paginator.paginate_queryset(sorted_users, request)
         serializer = user_serializer.UserListSerializer(paginated_users, many=True)
-        return paginator.get_paginated_response(serializer.data)
+        return api_response(
+            message="Users retrieved successfully.",
+            data=serializer.data,
+            status_code=status.HTTP_200_OK,
+        )
 
     @method_decorator(
         ratelimit(key="ip", rate="5/m", block=True)  # 5 requests per minute per IP
