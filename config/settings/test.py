@@ -16,7 +16,7 @@ os.environ.setdefault("SMS_ENABLED", "False")
 os.environ.setdefault("IN_APP_ENABLED", "True")
 os.environ.setdefault("WEBHOOK_ENABLED", "False")
 
-from .base import *  # noqa: F403,F401
+from .base import *  # noqa: F403,F401,E402
 
 DEBUG = False
 ALLOWED_HOSTS = ["127.0.0.1", "localhost", "testserver"]
