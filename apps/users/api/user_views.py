@@ -1,9 +1,8 @@
+from django.utils.decorators import method_decorator
+from django_ratelimit.decorators import ratelimit
 from rest_framework import status
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.views import APIView
-
-from django.utils.decorators import method_decorator
-from django_ratelimit.decorators import ratelimit
 
 from apps.generics.permissions import HasPermission, IsAuthenticated
 from apps.generics.responses import api_response
