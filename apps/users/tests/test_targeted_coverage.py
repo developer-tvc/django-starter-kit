@@ -14,7 +14,7 @@ from rest_framework_simplejwt.exceptions import TokenError
 from apps.activity.models import ActivityLog
 from apps.activity.utils import get_diff, serialize_instance
 from apps.generics.middleware.exception_handler import GlobalExceptionMiddleware
-from apps.notifications.tasks.notification_tasks import send_notification_task
+from apps.notifications.tasks.notification_tasks import run_send_notification_task
 from apps.users import constants
 from apps.users.models import Role, UserPermission, UserRole
 from apps.users.tests.factories.user_factory import UserFactory
@@ -204,7 +204,7 @@ def test_role_views_cover_all_methods():
     ):
         response = client.put(
             reverse("role_update_destroy", args=[role.id]),
-            {"name": "Lead"},
+            {"name": "Lead Shadow"},
             format="json",
         )
     assert response.status_code == 409
@@ -215,7 +215,7 @@ def test_role_views_cover_all_methods():
     ):
         response = client.put(
             reverse("role_update_destroy", args=[role.id]),
-            {"name": "Lead"},
+            {"name": "Lead Shadow Two"},
             format="json",
         )
     assert response.status_code == 404
@@ -269,7 +269,7 @@ def test_role_views_cover_all_methods():
     ):
         response = client.put(
             reverse("permission_update_destroy", args=[permission.id]),
-            {"name": "perm:updated"},
+            {"name": "perm:updated:shadow"},
             format="json",
         )
     assert response.status_code == 409
@@ -280,7 +280,7 @@ def test_role_views_cover_all_methods():
     ):
         response = client.put(
             reverse("permission_update_destroy", args=[permission.id]),
-            {"name": "perm:updated"},
+            {"name": "perm:updated:shadow-two"},
             format="json",
         )
     assert response.status_code == 404
@@ -417,7 +417,7 @@ def test_notification_task_retry_paths():
         "apps.notifications.tasks.notification_tasks.NotificationService",
         return_value=service,
     ):
-        send_notification_task.run(task, [1], "Title", "Body", ["in_app"])
+        run_send_notification_task(task, [1], "Title", "Body", ["in_app"])
 
     task.retry.assert_called_once()
 
@@ -435,7 +435,7 @@ def test_notification_task_retry_paths():
         "apps.notifications.tasks.notification_tasks.NotificationService",
         return_value=service,
     ):
-        send_notification_task.run(task, [1], "Title", "Body", ["in_app"])
+        run_send_notification_task(task, [1], "Title", "Body", ["in_app"])
 
     assert log.status == "failed"
     assert log.retry_count == 3
@@ -452,7 +452,7 @@ def test_notification_task_retry_paths():
         "apps.notifications.tasks.notification_tasks.NotificationService",
         return_value=service,
     ):
-        send_notification_task.run(task, [1], "Title", "Body", ["in_app"])
+        run_send_notification_task(task, [1], "Title", "Body", ["in_app"])
     task.retry.assert_not_called()
 
 

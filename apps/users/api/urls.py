@@ -16,7 +16,9 @@ urlpatterns = [
     path("login/", auth_views.LoginView.as_view(), name="login"),
     path("refresh/", auth_views.CustomTokenRefreshView.as_view(), name="token_refresh"),
     path(
-        "logout/", auth_views.CustomTokenBlacklistView.as_view(), name="token_blacklist"
+        "logout/blacklist/",
+        auth_views.CustomTokenBlacklistView.as_view(),
+        name="token_blacklist",
     ),
     path("roles/", role_views.RoleListCreateView.as_view(), name="role_list_create"),
     path(
