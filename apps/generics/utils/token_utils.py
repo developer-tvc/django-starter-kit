@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 
 import jwt
 from django.conf import settings
@@ -7,7 +7,7 @@ from django.conf import settings
 def create_password_reset_token(user_id: int):
     payload = {
         "user_id": user_id,
-        "exp": datetime.utcnow() + timedelta(minutes=15),
+        "exp": datetime.now(UTC) + timedelta(minutes=15),
         "type": "password_reset",
     }
 

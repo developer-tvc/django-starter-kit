@@ -1,6 +1,6 @@
 import logging
 import traceback
-from datetime import datetime
+from datetime import UTC, datetime
 
 from django.http import JsonResponse
 from django.utils.deprecation import MiddlewareMixin
@@ -17,7 +17,7 @@ class GlobalExceptionMiddleware(MiddlewareMixin):
     def process_exception(self, request, exception):
         # Log exception details
         log_data = {
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "level": "ERROR",
             "message": str(exception),
             "module": exception.__class__.__name__,

@@ -9,6 +9,7 @@ User = get_user_model()
 class UserFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = User
+        skip_postgeneration_save = True
 
     username = factory.LazyAttribute(lambda _: fake.user_name())
     email = factory.LazyAttribute(lambda _: fake.email())

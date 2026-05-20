@@ -116,14 +116,23 @@ class RoleService:
         Assign roles to a user
         """
 
-        user_roles = UserRole.objects.filter(user=user_id, role__in=role_ids)
-        if user_roles.exists():
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            raise ObjectDoesNotExist("User not found")
+
+        existing_user_roles = UserRole.objects.filter(user=user, role_id__in=role_ids)
+        if existing_user_roles.exists():
             raise ValueError("User Role already exists")
 
-        for user_role in user_roles:
-            UserRole.objects.create(user=user_id, role=user_role.role)
+        roles = Role.objects.filter(id__in=role_ids)
+        if not roles.exists():
+            raise ValueError("Roles not found")
 
-        return user_roles
+        for role in roles:
+            UserRole.objects.create(user=user, role=role)
+
+        return user
 
     @staticmethod  # Static service method to avoid unnecessary class instantiation
     @transaction.atomic
