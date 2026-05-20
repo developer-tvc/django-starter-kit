@@ -1,5 +1,6 @@
 import json
 import logging
+import threading
 from types import SimpleNamespace
 from unittest.mock import Mock
 
@@ -49,6 +50,19 @@ class FailingCursor(SuccessfulCursor):
 AUTHENTICATE_PATH = (
     "apps.generics.middleware.current_user_middleware." "JWTAuthentication.authenticate"
 )
+
+
+@pytest.fixture(autouse=True)
+def clear_thread_locals():
+    thread = threading.current_thread()
+    previous_user = getattr(thread, "_django_user", None)
+    had_user = hasattr(thread, "_django_user")
+    thread._django_user = None
+    yield
+    if had_user:
+        thread._django_user = previous_user
+    elif hasattr(thread, "_django_user"):
+        delattr(thread, "_django_user")
 
 
 @pytest.mark.django_db

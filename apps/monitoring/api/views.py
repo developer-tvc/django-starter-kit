@@ -8,6 +8,9 @@ from apps.monitoring.api.schemas import health_schema, readiness_schema
 
 @health_schema
 class HealthView(APIView):
+    authentication_classes = []
+    permission_classes = []
+
     def get(self, request):
         try:
             with connection.cursor() as cursor:
@@ -23,6 +26,9 @@ class HealthView(APIView):
 
 @readiness_schema
 class ReadinessView(APIView):
+    authentication_classes = []
+    permission_classes = []
+
     def get(self, request):
         ready = True
         details = {}

@@ -1,3 +1,4 @@
+import threading
 from datetime import UTC, datetime, timedelta
 from types import SimpleNamespace
 from unittest.mock import Mock, patch
@@ -35,6 +36,19 @@ from apps.users.services.profile_service import ProfileService
 from apps.users.services.role_service import RoleService
 from apps.users.services.user_service import UserService
 from apps.users.tests.factories.user_factory import UserFactory
+
+
+@pytest.fixture(autouse=True)
+def clear_thread_locals():
+    thread = threading.current_thread()
+    previous_user = getattr(thread, "_django_user", None)
+    had_user = hasattr(thread, "_django_user")
+    thread._django_user = None
+    yield
+    if had_user:
+        thread._django_user = previous_user
+    elif hasattr(thread, "_django_user"):
+        delattr(thread, "_django_user")
 
 
 @pytest.mark.django_db
