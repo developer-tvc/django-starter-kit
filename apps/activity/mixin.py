@@ -30,9 +30,6 @@ class ActivityMixin(models.Model):
         if not user:
             return
 
-        if not user:
-            return
-
         ct = ContentType.objects.get_for_model(self)
 
         model_name = self.__class__.__name__

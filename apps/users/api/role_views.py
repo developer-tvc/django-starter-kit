@@ -1,3 +1,4 @@
+from django.core.exceptions import ObjectDoesNotExist
 from django.utils.decorators import method_decorator
 from django_ratelimit.decorators import ratelimit
 from rest_framework import status
@@ -86,6 +87,8 @@ class RoleUpdateDestroyView(APIView):
             return api_response(
                 message="Role updated successfully.", data=serializer.data
             )
+        except ObjectDoesNotExist as e:
+            return api_response(message=str(e), status_code=status.HTTP_404_NOT_FOUND)
         except ValueError as e:
             return api_response(message=str(e), status_code=status.HTTP_409_CONFLICT)
 
@@ -97,6 +100,8 @@ class RoleUpdateDestroyView(APIView):
         try:
             RoleService.delete_role(role_id)
             return api_response(message="Role deleted successfully.")
+        except ObjectDoesNotExist as e:
+            return api_response(message=str(e), status_code=status.HTTP_404_NOT_FOUND)
         except ValueError as e:
             return api_response(message=str(e), status_code=status.HTTP_409_CONFLICT)
 
@@ -178,6 +183,8 @@ class PermissionUpdateDestroyView(APIView):
             return api_response(
                 message="Permission updated successfully.", data=serializer.data
             )
+        except ObjectDoesNotExist as e:
+            return api_response(message=str(e), status_code=status.HTTP_404_NOT_FOUND)
         except ValueError as e:
             return api_response(message=str(e), status_code=status.HTTP_409_CONFLICT)
 
@@ -189,6 +196,8 @@ class PermissionUpdateDestroyView(APIView):
         try:
             RoleService.delete_permission(permission_id)
             return api_response(message="Permission deleted successfully.")
+        except ObjectDoesNotExist as e:
+            return api_response(message=str(e), status_code=status.HTTP_404_NOT_FOUND)
         except ValueError as e:
             return api_response(message=str(e), status_code=status.HTTP_409_CONFLICT)
 
@@ -243,6 +252,8 @@ class UserRoleAssignView(APIView):
                 message="Roles assigned to user successfully.",
                 status_code=status.HTTP_201_CREATED,
             )
+        except ObjectDoesNotExist as e:
+            return api_response(message=str(e), status_code=status.HTTP_404_NOT_FOUND)
         except ValueError as e:
             return api_response(message=str(e), status_code=status.HTTP_409_CONFLICT)
 
@@ -297,5 +308,7 @@ class RoleUnassignView(APIView):
                 message="Roles unassigned from user successfully.",
                 status_code=status.HTTP_201_CREATED,
             )
+        except ObjectDoesNotExist as e:
+            return api_response(message=str(e), status_code=status.HTTP_404_NOT_FOUND)
         except ValueError as e:
             return api_response(message=str(e), status_code=status.HTTP_409_CONFLICT)
