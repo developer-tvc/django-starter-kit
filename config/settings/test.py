@@ -6,7 +6,10 @@ os.environ.setdefault("PSQL_USER", "postgres")
 os.environ.setdefault("PSQL_PASSWORD", "postgres")
 os.environ.setdefault("PSQL_HOST", "localhost")
 os.environ.setdefault("PSQL_PORT", "5432")
-os.environ.setdefault("SECRET_KEY", "test-secret-key")
+os.environ.setdefault(
+    "SECRET_KEY",
+    "test-secret-key-for-ci-only-please-change-this-to-a-long-random-value",
+)
 os.environ.setdefault("LOGIN_LOCK_ENABLED", "False")
 os.environ.setdefault("LOGIN_MAX_ATTEMPTS", "5")
 os.environ.setdefault("LOGIN_LOCK_MINUTES", "15")
@@ -20,6 +23,8 @@ from .base import *  # noqa: F403,F401,E402
 
 DEBUG = False
 ALLOWED_HOSTS = ["127.0.0.1", "localhost", "testserver"]
+SECURE_SSL_REDIRECT = False
+SECURE_HSTS_SECONDS = 3600
 
 PASSWORD_HASHERS = [
     "django.contrib.auth.hashers.MD5PasswordHasher",
