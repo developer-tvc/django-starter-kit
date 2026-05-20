@@ -185,7 +185,7 @@ def test_role_views_cover_all_methods():
         side_effect=ValueError("duplicate role"),
     ):
         response = client.post(
-            reverse("role_list_create"), {"name": "Admin"}, format="json"
+            reverse("role_list_create"), {"name": "Admin Shadow"}, format="json"
         )
     assert response.status_code == 409
     assert response.data["message"] == "duplicate role"
@@ -250,7 +250,9 @@ def test_role_views_cover_all_methods():
         side_effect=ValueError("duplicate permission"),
     ):
         response = client.post(
-            reverse("permission_list_create"), {"name": "perm:create"}, format="json"
+            reverse("permission_list_create"),
+            {"name": "perm:create:shadow"},
+            format="json",
         )
     assert response.status_code == 409
 
@@ -415,7 +417,7 @@ def test_notification_task_retry_paths():
         "apps.notifications.tasks.notification_tasks.NotificationService",
         return_value=service,
     ):
-        send_notification_task(task, [1], "Title", "Body", ["in_app"])
+        send_notification_task.run(task, [1], "Title", "Body", ["in_app"])
 
     task.retry.assert_called_once()
 
@@ -433,7 +435,7 @@ def test_notification_task_retry_paths():
         "apps.notifications.tasks.notification_tasks.NotificationService",
         return_value=service,
     ):
-        send_notification_task(task, [1], "Title", "Body", ["in_app"])
+        send_notification_task.run(task, [1], "Title", "Body", ["in_app"])
 
     assert log.status == "failed"
     assert log.retry_count == 3
@@ -450,7 +452,7 @@ def test_notification_task_retry_paths():
         "apps.notifications.tasks.notification_tasks.NotificationService",
         return_value=service,
     ):
-        send_notification_task(task, [1], "Title", "Body", ["in_app"])
+        send_notification_task.run(task, [1], "Title", "Body", ["in_app"])
     task.retry.assert_not_called()
 
 

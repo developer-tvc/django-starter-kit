@@ -61,6 +61,9 @@ class CustomTokenBlacklistView(TokenBlacklistView):
 
 
 class PasswordResetRequestView(APIView):
+    authentication_classes = []
+    permission_classes = []
+
     @method_decorator(
         ratelimit(key="ip", rate="5/m", block=True)  # 5 requests per minute per IP
     )
@@ -78,6 +81,9 @@ class PasswordResetRequestView(APIView):
 
 
 class PasswordResetConfirmView(APIView):
+    authentication_classes = []
+    permission_classes = []
+
     @method_decorator(
         ratelimit(key="ip", rate="5/m", block=True)  # 5 requests per minute per IP
     )
@@ -135,6 +141,9 @@ class LogoutView(APIView):
 
 
 class EmailVerificationView(APIView):
+    authentication_classes = []
+    permission_classes = []
+
     @method_decorator(
         ratelimit(key="ip", rate="5/m", block=True)  # 5 requests per minute per IP
     )
