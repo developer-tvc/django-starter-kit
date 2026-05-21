@@ -1,4 +1,9 @@
-from .base import *  # noqa: F403,F401
+from . import base as base_settings
+
+# Re-export uppercase settings from the base module for local development.
+for setting_name in dir(base_settings):
+    if setting_name.isupper():
+        globals()[setting_name] = getattr(base_settings, setting_name)
 
 ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
 

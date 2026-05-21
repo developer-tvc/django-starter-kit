@@ -12,6 +12,8 @@ from apps.users.selectors.user_selectors import get_user
 from apps.users.serializers import user_serializer
 from apps.users.services.user_service import UserService
 
+USER_NOT_FOUND_MESSAGE = "User not found"
+
 
 class UserListCreateView(APIView):
     permission_classes = [HasPermission, IsAuthenticated]
@@ -86,7 +88,8 @@ class UserRetrieveUpdateDeleteView(APIView):
         user = get_user(user_id)
         if not user:
             return api_response(
-                message="User not found", status_code=status.HTTP_404_NOT_FOUND
+                message=USER_NOT_FOUND_MESSAGE,
+                status_code=status.HTTP_404_NOT_FOUND,
             )
         serializer = user_serializer.UserListSerializer(user)
         return api_response(
@@ -103,7 +106,8 @@ class UserRetrieveUpdateDeleteView(APIView):
         user = UserService.update_user(user_id, serializer.validated_data)
         if not user:
             return api_response(
-                message="User not found", status_code=status.HTTP_404_NOT_FOUND
+                message=USER_NOT_FOUND_MESSAGE,
+                status_code=status.HTTP_404_NOT_FOUND,
             )
         serializer = user_serializer.UserListSerializer(user)
         return api_response(message="User updated successfully.", data=serializer.data)
@@ -116,7 +120,8 @@ class UserRetrieveUpdateDeleteView(APIView):
         user = UserService.delete_user(user_id)
         if not user:
             return api_response(
-                message="User not found", status_code=status.HTTP_404_NOT_FOUND
+                message=USER_NOT_FOUND_MESSAGE,
+                status_code=status.HTTP_404_NOT_FOUND,
             )
         return api_response(
             message="User deleted successfully.", status_code=status.HTTP_200_OK

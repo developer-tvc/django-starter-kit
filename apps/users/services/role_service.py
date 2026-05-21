@@ -5,6 +5,8 @@ from django.db import transaction
 from apps.users.models import Role, UserPermission, UserRole
 
 User = get_user_model()
+ROLE_NOT_FOUND_MESSAGE = "Role not found"
+USER_NOT_FOUND_MESSAGE = "User not found"
 
 
 class RoleService:
@@ -71,7 +73,7 @@ class RoleService:
         try:
             role = Role.objects.get(id=role_id)
         except Role.DoesNotExist:
-            raise ObjectDoesNotExist("Role not found")
+            raise ObjectDoesNotExist(ROLE_NOT_FOUND_MESSAGE)
 
         role.name = role_name
         role.save()
@@ -87,7 +89,7 @@ class RoleService:
         try:
             role = Role.objects.get(id=role_id)
         except Role.DoesNotExist:
-            raise ObjectDoesNotExist("Role not found")
+            raise ObjectDoesNotExist(ROLE_NOT_FOUND_MESSAGE)
 
         role.delete()
 
@@ -101,7 +103,7 @@ class RoleService:
         try:
             role = Role.objects.get(id=role_id)
         except Role.DoesNotExist:
-            raise ObjectDoesNotExist("Role not found")
+            raise ObjectDoesNotExist(ROLE_NOT_FOUND_MESSAGE)
 
         permissions = UserPermission.objects.filter(id__in=permission_ids)
 
@@ -119,7 +121,7 @@ class RoleService:
         try:
             user = User.objects.get(id=user_id)
         except User.DoesNotExist:
-            raise ObjectDoesNotExist("User not found")
+            raise ObjectDoesNotExist(USER_NOT_FOUND_MESSAGE)
 
         existing_user_roles = UserRole.objects.filter(user=user, role_id__in=role_ids)
         if existing_user_roles.exists():
@@ -144,7 +146,7 @@ class RoleService:
         try:
             user = User.objects.get(id=user_id)
         except User.DoesNotExist:
-            raise ObjectDoesNotExist("User not found")
+            raise ObjectDoesNotExist(USER_NOT_FOUND_MESSAGE)
 
         permissions = UserPermission.objects.filter(id__in=permission_ids)
 
@@ -162,7 +164,7 @@ class RoleService:
         try:
             role = Role.objects.get(id=role_id)
         except Role.DoesNotExist:
-            raise ObjectDoesNotExist("Role not found")
+            raise ObjectDoesNotExist(ROLE_NOT_FOUND_MESSAGE)
 
         permissions = UserPermission.objects.filter(id__in=permission_ids)
 
@@ -180,7 +182,7 @@ class RoleService:
         try:
             user = User.objects.get(id=user_id)
         except User.DoesNotExist:
-            raise ObjectDoesNotExist("User not found")
+            raise ObjectDoesNotExist(USER_NOT_FOUND_MESSAGE)
 
         roles = Role.objects.filter(id__in=role_ids)
         if not roles.exists():

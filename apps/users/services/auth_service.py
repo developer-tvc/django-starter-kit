@@ -16,114 +16,117 @@ from apps.users.selectors.auth_selectors import get_client_ip
 from apps.users.selectors.user_selectors import get_user_by_username
 
 User = get_user_model()
+INVALID_CREDENTIALS_MESSAGE = "Invalid username or password"
 
 
 class AuthService:
     @staticmethod
     def login(username: str, password: str, request):
-        user = authenticate(username=username, password=password)
         now = timezone.now()
-        get_user = get_user_by_username(username)
-        if not get_user:
-            raise AuthenticationFailed("Invalid username or password")
-        if settings.LOGIN_LOCK_ENABLED == "True":
-            # If account is locked and still within lock window
-            if (
-                get_user.is_locked
-                and get_user.locked_until
-                and get_user.locked_until > now
-            ):
-                remaining_seconds = int((get_user.locked_until - now).total_seconds())
-                remaining_minutes = remaining_seconds // 60
-                remaining_seconds = remaining_seconds % 60
-                raise AuthenticationFailed(
-                    "Account locked. "
-                    f"Try again in {remaining_minutes}m {remaining_seconds}s"
-                )
+        auth_user = authenticate(username=username, password=password)
+        stored_user = get_user_by_username(username)
 
-            # If lock time expired → reset lock
-            if (
-                get_user.is_locked
-                and get_user.locked_until
-                and get_user.locked_until <= now
-            ):
-                get_user.is_locked = False
-                get_user.failed_login_attempts = 0
-                get_user.locked_until = None
-                get_user.save(
-                    update_fields=["is_locked", "failed_login_attempts", "locked_until"]
-                )
+        if not stored_user:
+            raise AuthenticationFailed(INVALID_CREDENTIALS_MESSAGE)
 
-        # If lock is disabled but lock time expired → reset lock
-        elif (
-            settings.LOGIN_LOCK_ENABLED == "False"
-            and get_user.is_locked
-            and get_user.locked_until
-        ):
-            get_user.is_locked = False
-            get_user.failed_login_attempts = 0
-            get_user.locked_until = None
-            get_user.save(
-                update_fields=["is_locked", "failed_login_attempts", "locked_until"]
-            )
+        AuthService._handle_login_lock_state(stored_user, now)
 
-        if not user:
-            # Password check (already done via authenticate, but kept here if needed)
-            if not get_user.check_password(password):
-                if settings.LOGIN_LOCK_ENABLED == "True":
-                    get_user.failed_login_attempts += 1
+        if not auth_user:
+            AuthService._handle_failed_login(stored_user, password)
+            raise AuthenticationFailed(INVALID_CREDENTIALS_MESSAGE)
 
-                    # Lock account if attempts exceed maximum
-                    if int(get_user.failed_login_attempts) >= int(
-                        settings.LOGIN_MAX_ATTEMPTS
-                    ):
-                        get_user.is_locked = True
-                        get_user.locked_until = timezone.now() + timedelta(
-                            minutes=int(settings.LOGIN_LOCK_MINUTES)
-                        )
-
-                    get_user.save(
-                        update_fields=[
-                            "failed_login_attempts",
-                            "is_locked",
-                            "locked_until",
-                        ]
-                    )
-
-            raise AuthenticationFailed("Invalid username or password")
-            # Optionally, track failed login globally here
-            raise AuthenticationFailed("Invalid username or password")
-
-        if not user.is_active:
+        if not auth_user.is_active:
             raise AuthenticationFailed("Account is disabled")
 
-        if not user.is_email_verified:
+        if not auth_user.is_email_verified:
             raise AuthenticationFailed("Account is not verified")
 
-        now = timezone.now()
-
-        # Reset failed attempts on successful login
-        if settings.LOGIN_LOCK_ENABLED == "True":
-            user.failed_login_attempts = 0
-            user.is_locked = False
-            user.locked_until = None
-            user.save(
-                update_fields=["failed_login_attempts", "is_locked", "locked_until"]
-            )
-
-        # Update last login and IP
-        user.last_login = now
-        user.ip_address = get_client_ip(request)
-        user.save(update_fields=["last_login", "ip_address"])
+        AuthService._reset_failed_login_state(auth_user)
+        AuthService._update_login_metadata(auth_user, request, now)
 
         # Issue JWT tokens
-        refresh = RefreshToken.for_user(user)
-        track_device(request, user)
+        refresh = RefreshToken.for_user(auth_user)
+        track_device(request, auth_user)
         return {
             "token_type": "Bearer",
             "access": str(refresh.access_token),
             "refresh": str(refresh),
         }
+
+    @staticmethod
+    def _handle_login_lock_state(user, now):
+        if AuthService._is_lock_enabled():
+            AuthService._raise_if_account_locked(user, now)
+            if AuthService._lock_has_expired(user, now):
+                AuthService._clear_login_lock(user)
+            return
+
+        if user.is_locked and user.locked_until:
+            AuthService._clear_login_lock(user)
+
+    @staticmethod
+    def _raise_if_account_locked(user, now):
+        if not AuthService._is_account_locked(user, now):
+            return
+
+        remaining_seconds = int((user.locked_until - now).total_seconds())
+        remaining_minutes = remaining_seconds // 60
+        remaining_seconds = remaining_seconds % 60
+        raise AuthenticationFailed(
+            "Account locked. "
+            f"Try again in {remaining_minutes}m {remaining_seconds}s"
+        )
+
+    @staticmethod
+    def _handle_failed_login(user, password):
+        if user.check_password(password) or not AuthService._is_lock_enabled():
+            return
+
+        user.failed_login_attempts += 1
+        if int(user.failed_login_attempts) >= int(settings.LOGIN_MAX_ATTEMPTS):
+            user.is_locked = True
+            user.locked_until = timezone.now() + timedelta(
+                minutes=int(settings.LOGIN_LOCK_MINUTES)
+            )
+
+        user.save(
+            update_fields=["failed_login_attempts", "is_locked", "locked_until"]
+        )
+
+    @staticmethod
+    def _reset_failed_login_state(user):
+        if not AuthService._is_lock_enabled():
+            return
+
+        user.failed_login_attempts = 0
+        user.is_locked = False
+        user.locked_until = None
+        user.save(update_fields=["failed_login_attempts", "is_locked", "locked_until"])
+
+    @staticmethod
+    def _update_login_metadata(user, request, now):
+        user.last_login = now
+        user.ip_address = get_client_ip(request)
+        user.save(update_fields=["last_login", "ip_address"])
+
+    @staticmethod
+    def _clear_login_lock(user):
+        user.is_locked = False
+        user.failed_login_attempts = 0
+        user.locked_until = None
+        user.save(update_fields=["is_locked", "failed_login_attempts", "locked_until"])
+
+    @staticmethod
+    def _is_lock_enabled():
+        return settings.LOGIN_LOCK_ENABLED == "True"
+
+    @staticmethod
+    def _is_account_locked(user, now):
+        return user.is_locked and user.locked_until and user.locked_until > now
+
+    @staticmethod
+    def _lock_has_expired(user, now):
+        return user.is_locked and user.locked_until and user.locked_until <= now
 
     @staticmethod
     def request_password_reset(email: str):

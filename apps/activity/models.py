@@ -33,7 +33,7 @@ class UserDevice(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     device_id = models.CharField(max_length=255)  # unique per device
-    device_name = models.CharField(max_length=255, null=True, blank=True)
+    device_name = models.CharField(max_length=255, blank=True)
 
     ip_address = models.GenericIPAddressField(null=True, blank=True)
     user_agent = models.TextField()

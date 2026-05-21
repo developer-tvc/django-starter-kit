@@ -308,20 +308,22 @@ X_FRAME_OPTIONS = "DENY"
 SECURE_REFERRER_POLICY = "same-origin"
 
 # Content Security Policy (CSP)
+CSP_SELF = "'self'"
+CSP_HTTPS = "https:"
 CONTENT_SECURITY_POLICY = {
     "DIRECTIVES": {
-        "default-src": ("'self'",),
-        "img-src": ("'self'", "data:", "https:"),
+        "default-src": (CSP_SELF,),
+        "img-src": (CSP_SELF, "data:", CSP_HTTPS),
         "script-src": (
-            "'self'",
+            CSP_SELF,
             "'unsafe-inline'",  # required for swagger
             "'unsafe-eval'",  # required for swagger
-            "https:",
+            CSP_HTTPS,
         ),
         "style-src": (
-            "'self'",
+            CSP_SELF,
             "'unsafe-inline'",  # required for swagger UI styles
-            "https:",
+            CSP_HTTPS,
         ),
     }
 }

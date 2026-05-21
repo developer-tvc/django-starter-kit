@@ -14,77 +14,95 @@ class ActivityMixin(models.Model):
         abstract = True
 
     def save(self, *args, **kwargs):
-
         is_create = self._state.adding
-        old_instance = None
-
-        if not is_create:
-            old_instance = self.__class__.objects.get(pk=self.pk)
+        old_instance = None if is_create else self.__class__.objects.get(pk=self.pk)
 
         super().save(*args, **kwargs)
 
-        user = getattr(threading.current_thread(), "_django_user", None)
-        if isinstance(user, AnonymousUser):
-            user = None
-
+        user = self._get_activity_user()
         if not user:
             return
 
         ct = ContentType.objects.get_for_model(self)
-
-        model_name = self.__class__.__name__
-
-        label = constants.LOG_DESCRIPTION.get(model_name, model_name.lower())
+        label = self._get_activity_label()
 
         if is_create:
-            ActivityLog.objects.create(
-                user=user,
-                action=f"{label} created",
-                content_type=ct,
-                object_id=self.pk,
-                description=f"created by {user.first_name} {user.last_name}",
-                new_value=serialize_instance(self),
-            )
-        elif not is_create:
-            action = f"{label} updated"
-            diff = get_diff(old_instance, self)
-            if not diff:
-                return
-            changes = []
+            self._log_create_activity(user, ct, label)
+            return
 
-            def is_empty(value):
-                return (
-                    value is None
-                    or value == "None"
-                    or value == ""
-                    or value == []
-                    or value == {}
-                )
+        self._log_update_activity(user, ct, label, old_instance)
 
-            for field in diff["new"].keys():
-                old = diff["old"].get(field)
-                new = diff["new"].get(field)
-                if is_empty(old) and not is_empty(new):
-                    changes.append(f"added {field} → {new}")
-                elif not is_empty(old) and is_empty(new):
-                    changes.append(f"removed {field} (was {old})")
-                elif old != new:
-                    changes.append(f"changed {field} from {old} → {new}")
+    @staticmethod
+    def _get_activity_user():
+        user = getattr(threading.current_thread(), "_django_user", None)
+        if isinstance(user, AnonymousUser):
+            return None
+        return user
 
-            description = (
-                f"{action} by {user.first_name} {user.last_name}. "
-                f"Changes: {'; '.join(changes)}"
-            )
+    def _get_activity_label(self):
+        model_name = self.__class__.__name__
+        return constants.LOG_DESCRIPTION.get(model_name, model_name.lower())
 
-            ActivityLog.objects.create(
-                user=user,
-                action=action,
-                content_type=ct,
-                object_id=self.pk,
-                old_value=diff["old"],
-                new_value=diff["new"],
-                description=description,
-            )
+    def _log_create_activity(self, user, content_type, label):
+        ActivityLog.objects.create(
+            user=user,
+            action=f"{label} created",
+            content_type=content_type,
+            object_id=self.pk,
+            description=f"created by {user.first_name} {user.last_name}",
+            new_value=serialize_instance(self),
+        )
+
+    def _log_update_activity(self, user, content_type, label, old_instance):
+        diff = get_diff(old_instance, self)
+        if not diff:
+            return
+
+        action = f"{label} updated"
+        changes = self._build_change_messages(diff)
+        description = (
+            f"{action} by {user.first_name} {user.last_name}. "
+            f"Changes: {'; '.join(changes)}"
+        )
+
+        ActivityLog.objects.create(
+            user=user,
+            action=action,
+            content_type=content_type,
+            object_id=self.pk,
+            old_value=diff["old"],
+            new_value=diff["new"],
+            description=description,
+        )
+
+    def _build_change_messages(self, diff):
+        changes = []
+
+        for field in diff["new"]:
+            old = diff["old"].get(field)
+            new = diff["new"].get(field)
+            if self._is_empty_activity_value(old) and not self._is_empty_activity_value(
+                new
+            ):
+                changes.append(f"added {field} → {new}")
+            elif not self._is_empty_activity_value(
+                old
+            ) and self._is_empty_activity_value(new):
+                changes.append(f"removed {field} (was {old})")
+            elif old != new:
+                changes.append(f"changed {field} from {old} → {new}")
+
+        return changes
+
+    @staticmethod
+    def _is_empty_activity_value(value):
+        return (
+            value is None
+            or value == "None"
+            or value == ""
+            or value == []
+            or value == {}
+        )
 
     def delete(self, *args, **kwargs):
         user = getattr(threading.current_thread(), "_django_user", None)

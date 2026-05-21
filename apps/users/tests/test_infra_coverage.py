@@ -48,7 +48,7 @@ class FailingCursor(SuccessfulCursor):
 
 
 AUTHENTICATE_PATH = (
-    "apps.generics.middleware.current_user_middleware." "JWTAuthentication.authenticate"
+    "apps.generics.middleware.current_user_middleware.JWTAuthentication.authenticate"
 )
 
 

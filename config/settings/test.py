@@ -19,7 +19,12 @@ os.environ.setdefault("SMS_ENABLED", "False")
 os.environ.setdefault("IN_APP_ENABLED", "True")
 os.environ.setdefault("WEBHOOK_ENABLED", "False")
 
-from .base import *  # noqa: F403,F401,E402
+from . import base as base_settings
+
+# Re-export uppercase settings from the base module for test inheritance.
+for setting_name in dir(base_settings):
+    if setting_name.isupper():
+        globals()[setting_name] = getattr(base_settings, setting_name)
 
 DEBUG = False
 ALLOWED_HOSTS = ["127.0.0.1", "localhost", "testserver"]

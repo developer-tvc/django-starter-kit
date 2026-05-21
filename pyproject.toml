@@ -1,9 +1,9 @@
 [project]
 name = "django-starter-kit"
 version = "0.1.0"
-description = ""
+description = "A Django Starter Kit is a ready-to-use Django project template designed to kickstart development with built-in best practices, reusable modules, and pre-configured tools for faster and scalable application development."
 authors = [
-    {name = "Your Name",email = "you@example.com"}
+    {name = "Vishnu vp",email = "vishnu.vp@techversantinfotech.com"}
 ]
 requires-python = ">=3.12"
 dependencies = [
